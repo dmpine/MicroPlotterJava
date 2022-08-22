@@ -733,22 +733,36 @@ public class Layout implements SerialPortDataListener {
     public void update_plot(String data) {
         String delimiters = "\t" + "\r" + "\n" + " ";
         StringTokenizer str = new StringTokenizer(data, delimiters);
-        String series[] = new String[200];
+        //String series[] = new String[200];
+        double series[] = new double[200];
+        double auxf = 0;
         int columns = 0;
         while (str.hasMoreElements()) {
-            series[columns] = str.nextToken();
-            columns++;
+            //series[columns] = str.nextToken();
+            //columns++;
+            String auxStr = str.nextToken();
+            //System.out.println(auxStr);
+            
+            try{
+                auxf = Double.parseDouble(auxStr);
+                series[columns] = auxf;
+                columns++;
+            } catch (NumberFormatException e){
+                // Nothing
+            }
+            
         }
 
         x_data++;
-        float col_data[] = new float[columns];
+        double col_data[] = new double[columns];
 
         try {
-            float auxf = 0;
             for (int j = 0; j < columns; j++) {
-                auxf = Float.parseFloat(series[j]);
+                auxf = series[j];
+                //auxf = Float.parseFloat(series[j]);
                 //dataSeriesAux.add(x_data, auxf);
                 col_data[j] = auxf;
+                //col_data[j] = series[j];
                 //arrDataSeriesAux[j].add(x_data, auxf);
 
                 switch (j) {
