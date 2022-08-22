@@ -29,11 +29,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
  * @author danielpineda
  */
 public class Control {
-
-    // Global variables
-    SerialPort port;
-    InputStream inputStream;
-
+    
     public Control() {
         // Buu
     }
@@ -47,9 +43,9 @@ public class Control {
 
     // Method to modify the form on pause action
     public void pause_form_actions(JButton btn_pause) {
-        if (btn_pause.getText() == "Pause plotting") {
+        if ("Pause plotting".equals(btn_pause.getText())) {
             btn_pause.setText("Resume plotting");
-        } else if (btn_pause.getText() == "Resume plotting") {
+        } else if ("Resume plotting".equals(btn_pause.getText())) {
             btn_pause.setText("Pause plotting");
         }
     }
@@ -59,7 +55,7 @@ public class Control {
             JComboBox cmb_dynamicSampleLimit, JComboBox cmb_refreshRate, JComboBox cmb_xAxisType,
             JComboBox cmb_yAxisType, JButton btn_plot, JButton btn_pause) {
 
-        if (btn_plot.getText() == "Start plotting") {
+        if ("Start plotting".equals(btn_plot.getText())) {
             btn_plot.setText("Stop plotting");
             btn_plot.setBackground(Color.red);
             // Enabling some elements
@@ -73,7 +69,7 @@ public class Control {
             cmb_xAxisType.setEnabled(false);
             cmb_yAxisType.setEnabled(false);
 
-        } else if (btn_plot.getText() == "Stop plotting") {
+        } else if ("Stop plotting".equals(btn_plot.getText())) {
             btn_plot.setText("Start plotting");
             btn_plot.setBackground(Color.gray);
             // Disabling some elements
@@ -82,7 +78,7 @@ public class Control {
             // Enabling some elements
             cmb_lineWidth.setEnabled(true);
             cmb_plotPresentation.setEnabled(true);
-            if ((String) cmb_plotPresentation.getSelectedItem() == "Dynamic") {
+            if ("Dynamic".equals((String) cmb_plotPresentation.getSelectedItem())) {
                 cmb_dynamicSampleLimit.setEnabled(true);
             }
             cmb_refreshRate.setEnabled(true);
@@ -94,12 +90,12 @@ public class Control {
 
     // Method to modify the form on start recording
     public void record_actions(JButton btn_record) {
-        if (btn_record.getText() == "Begin rec") {
+        if ("Begin rec".equals(btn_record.getText())) {
             btn_record.setText("Stop rec");
             btn_record.setBackground(Color.red);
 
             // Disabling some elements
-        } else if (btn_record.getText() == "Stop rec") {
+        } else if ("Stop rec".equals(btn_record.getText())) {
             btn_record.setText("Begin rec");
             btn_record.setBackground(Color.gray);
 
@@ -109,10 +105,6 @@ public class Control {
 
     // Method to create an empty plot
     public void create_empty_plot(JPanel panel, ChartPanel CP, JFreeChart chart, int fr_w, int fr_h) {
-        // Creating a data series
-        XYSeries dataSeries = new XYSeries("Data");
-        // Creating a dataset
-        XYSeriesCollection dataset = new XYSeriesCollection();
         CP.setPreferredSize(new Dimension(fr_w - 10, (int) (5.2 * fr_h / 10 - 105)));
         CP.setEnabled(false);
         panel.add(CP);
@@ -129,7 +121,7 @@ public class Control {
         XYPlot plot = (XYPlot) chart.getXYPlot();
 
         // Setting log format if activated
-        if ((String) cmb_xAxisType.getSelectedItem() == "Log") {
+        if ("Log".equals((String) cmb_xAxisType.getSelectedItem())) {
             LogarithmicAxis xLogAxis = new LogarithmicAxis("XLog");
             xLogAxis.setAllowNegativesFlag(true);
             plot.setDomainAxis(0, xLogAxis);
@@ -142,7 +134,7 @@ public class Control {
             plot.getDomainAxis().setRange(dataSeries.getMinX(), dataSeries.getMaxX());
         }
 
-        if ((String) cmb_yAxisType.getSelectedItem() == "Log") {
+        if ("Log".equals((String) cmb_yAxisType.getSelectedItem())) {
             LogarithmicAxis yLogAxis = new LogarithmicAxis("YLog");
             yLogAxis.setAllowNegativesFlag(true);
             plot.setRangeAxis(yLogAxis);

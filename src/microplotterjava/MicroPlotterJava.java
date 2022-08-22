@@ -7,9 +7,6 @@ package microplotterjava;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-
-
-
 /**
  *
  * @author danielpineda

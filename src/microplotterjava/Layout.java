@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 // JFreeChart imports
@@ -86,7 +85,6 @@ public class Layout implements SerialPortDataListener {
     int x_data = 0;
     JPanel pane_plt = new JPanel();
     XYSeries dataSeries;
-    XYSeries dataSeriesAux;
     // Possible data series
     XYSeries dataSeries0;
     XYSeries dataSeries1;
@@ -425,10 +423,10 @@ public class Layout implements SerialPortDataListener {
 
         // Changing to dynamic plotting
         cmb_plotPresentation.addActionListener((ActionEvent e) -> {
-            if ((String) cmb_plotPresentation.getSelectedItem() == "Static") {
+            if ("Static".equals((String) cmb_plotPresentation.getSelectedItem())) {
                 cmb_dynamicSampleLimit.setEnabled(false);
             }
-            if ((String) cmb_plotPresentation.getSelectedItem() == "Dynamic") {
+            if ("Dynamic".equals((String) cmb_plotPresentation.getSelectedItem())) {
                 cmb_dynamicSampleLimit.setEnabled(true);
             }
         });
@@ -472,10 +470,10 @@ public class Layout implements SerialPortDataListener {
 
         // Plotting data action
         btn_plot.addActionListener((ActionEvent e) -> {
-            if (btn_plot.getText() == "Start plotting") {
+            if ("Start plotting".equals(btn_plot.getText())) {
                 x_data = 0;
                 dataSeries = new XYSeries("Data");
-                dataSeriesAux = new XYSeries("Data");
+                new XYSeries("Data");
                 dataset = new XYSeriesCollection();
 
                 // Possible data series
@@ -546,16 +544,13 @@ public class Layout implements SerialPortDataListener {
             }
         });
 
-        btn_pause.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cont.pause_form_actions(btn_pause);
-                if ("Pause plotting".equals(btn_pause.getText())) {
-                    pause = false;
-                }
-                if ("Resume plotting".equals(btn_pause.getText())) {
-                    pause = true;
-                }
+        btn_pause.addActionListener((ActionEvent e) -> {
+            cont.pause_form_actions(btn_pause);
+            if ("Pause plotting".equals(btn_pause.getText())) {
+                pause = false;
+            }
+            if ("Resume plotting".equals(btn_pause.getText())) {
+                pause = true;
             }
         });
 
@@ -569,7 +564,6 @@ public class Layout implements SerialPortDataListener {
         cmb_port.removeAllItems();
 
         SerialPort[] ports = SerialPort.getCommPorts();
-        java.util.List<String> list = new ArrayList<String>();
         for (SerialPort prt : ports) {
 
             if (prt == null) {
@@ -577,8 +571,6 @@ public class Layout implements SerialPortDataListener {
                 btn_connect.setEnabled(false);
             }
             if (!prt.getDescriptivePortName().contains("Dial")) {
-                //cmb_port.addItem(port.getSystemPortPath());
-                //cmb_port.addItem(port.getPortDescription());
                 cmb_port.addItem(prt.getSystemPortName());
                 btn_connect.setEnabled(true);
                 btn_search.setText("Update port list");
@@ -594,7 +586,7 @@ public class Layout implements SerialPortDataListener {
             JButton btn_plot, JButton btn_send, JCheckBox chk_scroll,
             JButton btn_record, JCheckBox chk_addCR, JCheckBox chk_addNL) {
 
-        if (btn_connect.getText() == "Connect") {
+        if ("Connect".equals(btn_connect.getText())) {
 
             btn_connect.setText("Disconnect");
             btn_connect.setOpaque(true);
@@ -623,7 +615,7 @@ public class Layout implements SerialPortDataListener {
             port.openPort();
             port.addDataListener(this);
 
-        } else if (btn_connect.getText() == "Disconnect") {
+        } else if ("Disconnect".equals(btn_connect.getText())) {
 
             btn_connect.setText("Connect");
             btn_connect.setOpaque(true);
@@ -698,12 +690,10 @@ public class Layout implements SerialPortDataListener {
         }
 
         x_data++;
-        double col_data[] = new double[columns];
 
         try {
             for (int j = 0; j < columns; j++) {
                 auxf = series[j];
-                col_data[j] = auxf;
 
                 switch (j) {
                     case 0:
@@ -848,7 +838,6 @@ public class Layout implements SerialPortDataListener {
                 finalDataset = (XYSeriesCollection) cloneDataset;
 
                 cont.create_multiple_plot(finalDataset, CP, chart, pane_plt, cmb_lineWidth, cmb_xAxisType, cmb_yAxisType, fr_w, fr_h);
-                //cont.create_simple_plot(dataSeriesAux0, finalDataset, CP, chart, pane_plt, cmb_lineWidth, cmb_xAxisType, cmb_yAxisType, fr_w, fr_h);
                 startTime = System.currentTimeMillis();
             }
 
@@ -889,12 +878,17 @@ public class Layout implements SerialPortDataListener {
                 // Remove some characters
                 data = data.replace("\n", "").replace("\r", "");
 
-                if (plotting) {
-                    update_plot(data);
+                // Last verification after cleaning the data
+                if(data.length() == 0 || data.isEmpty()){
+                    // Do nothing
+                } else{
+                    if (plotting) {
+                        update_plot(data);
+                    }
+                    update_terminal(data);
                 }
-
-                update_terminal(data);
-                // Reset variable
+                
+                // Always reset variable
                 data = "";
             }
 
