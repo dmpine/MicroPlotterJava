@@ -17,18 +17,15 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class MicroPlotterJava {
 
     public static void main(String[] args) {
-        //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        
         try {
-            // Set System L&F
+            // Setting theme
         UIManager.setLookAndFeel(
             UIManager.getSystemLookAndFeelClassName());
         } 
         catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-           // handle exception
+           // Booo
         }
-        // handle exception
-        // handle exception
-        // handle exception
         
         MicroPlotterJava();
     }

@@ -7,7 +7,6 @@ package microplotterjava;
 // JFreeChart imports
 import java.awt.Dimension;
 import javax.swing.JPanel;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeries;
@@ -20,14 +19,8 @@ import javax.swing.*;
 // Serial port imports
 import com.fazecast.jSerialComm.*;
 import java.awt.BasicStroke;
-
 import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-
-import java.util.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
@@ -120,35 +113,8 @@ public class Control {
         XYSeries dataSeries = new XYSeries("Data");
         // Creating a dataset
         XYSeriesCollection dataset = new XYSeriesCollection();
-
-        // Creating the plot
-        //JFreeChart chart = ChartFactory.createXYLineChart(
-        //        null,//title,
-        //        null,//xAxisLabel,
-        //        null,//yAxisLabel,
-        //        null//dataset,
-        //        //PlotOrientation.VERTICAL, //Orientación del gráfico
-        //        //false, //Show legends
-        //);
-        // Editing the plot for aestetic purposes
-        /*
-        XYPlot plot = (XYPlot) chart.getXYPlot();
-        plot.setRangeGridlinePaint(Color.lightGray);
-        plot.setDomainGridlinePaint(Color.lightGray);
-        plot.setRangeGridlinesVisible(true);
-        plot.setDomainGridlinesVisible(true);
-        plot.setBackgroundPaint(Color.white);
-         */
-        // Using a renderer to improve plot quality
-        //XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-        // Adding the plot to the panel
-        //CP = new ChartPanel(chart);
         CP.setPreferredSize(new Dimension(fr_w - 10, (int) (5.2 * fr_h / 10 - 105)));
         CP.setEnabled(false);
-        //pnlGraficas.setLayout(new java.awt.BorderLayout());
-        //CP.setPreferredSize(new Dimension( (panel.getWidth()-10), (panel.getHeight()-10) ));
-        //CP.setSize(new Dimension(panel.getWidth()-100, panel.getHeight()-100));
-        //panel.setLayout(new java.awt.BorderLayout());
         panel.add(CP);
         panel.validate();
     }
@@ -159,38 +125,18 @@ public class Control {
             JComboBox cmb_xAxisType, JComboBox cmb_yAxisType, int fr_w, int fr_h) {
 
         // Creating the plot
-        //JFreeChart chart = ChartFactory.createXYLineChart(
-        //        null,//title,
-        //        null,//xAxisLabel,
-        //        null,//yAxisLabel,
-        //        dataSet//dataset,
-        //);
-        // Editing the plot for aestetic purposes
-        //XYPlot plot = (XYPlot) chart.getXYPlot();
-        //XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-        /*
-        XYPlot plot = (XYPlot) chart.getXYPlot();
-        plot.setRangeGridlinePaint(Color.lightGray);
-        plot.setDomainGridlinePaint(Color.lightGray);
-        plot.setRangeGridlinesVisible(true);
-        plot.setDomainGridlinesVisible(true);
-        plot.setBackgroundPaint(Color.white);
-         */
         // Using a renderer to improve plot quality
         XYPlot plot = (XYPlot) chart.getXYPlot();
 
         // Setting log format if activated
         if ((String) cmb_xAxisType.getSelectedItem() == "Log") {
             LogarithmicAxis xLogAxis = new LogarithmicAxis("XLog");
-            //LogarithmicAxis xLogAxis = (LogarithmicAxis) chart.getXYPlot().getDomainAxis();
             xLogAxis.setAllowNegativesFlag(true);
-            //xLogAxis.autoAdjustRange();
             plot.setDomainAxis(0, xLogAxis);
             plot.getDomainAxis().setRange(dataSeries.getMinX(), dataSeries.getMaxX());
             
         } else {
             NumberAxis xDecAxis = new NumberAxis("XDec");
-            //NumberAxis xDecAxis = (NumberAxis) chart.getXYPlot().getDomainAxis();
             xDecAxis.setAutoRange(true);
             plot.setDomainAxis(0, xDecAxis);
             plot.getDomainAxis().setRange(dataSeries.getMinX(), dataSeries.getMaxX());
@@ -198,26 +144,21 @@ public class Control {
 
         if ((String) cmb_yAxisType.getSelectedItem() == "Log") {
             LogarithmicAxis yLogAxis = new LogarithmicAxis("YLog");
-            //LogarithmicAxis yLogAxis = (LogarithmicAxis) chart.getXYPlot().getDomainAxis();
             yLogAxis.setAllowNegativesFlag(true);
-            //yLogAxis.setAutoRange(true);
             plot.setRangeAxis(yLogAxis);
             plot.getRangeAxis().setRange(dataSeries.getMinY(), dataSeries.getMaxY());
         } else {
             NumberAxis yDecAxis = new NumberAxis("YDec");
-            //NumberAxis yDecAxis = (NumberAxis) chart.getXYPlot().getRangeAxis();
             yDecAxis.setAutoRange(true);
             plot.setRangeAxis(yDecAxis);
             plot.getRangeAxis().setRange(dataSeries.getMinY(), dataSeries.getMaxY());
         }
 
-        //CP = new ChartPanel(chart);
         chart.getXYPlot().setDataset(dataset);
         
         CP.repaint();
         CP.setPreferredSize(new Dimension(fr_w - 10, (int) (5.2 * fr_h / 10 - 105)));
         panel.setLayout(new java.awt.BorderLayout());
-        //panel.removeAll();
         
         panel.add(CP);
         
@@ -266,7 +207,6 @@ public class Control {
             plot.setRangeAxis(yDecAxis);
         }
 
-        //CP = new ChartPanel(chart);
         chart.getXYPlot().setDataset(dataset);
         CP.repaint();
         CP.setPreferredSize(new Dimension(fr_w - 10, (int) (5.2 * fr_h / 10 - 105)));

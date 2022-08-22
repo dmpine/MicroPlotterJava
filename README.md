@@ -1,2 +1,2 @@
 # MicroPlotterJava
- Serial data plotting and recorrding tool
+ This is a serial data plotting and recording tool. 

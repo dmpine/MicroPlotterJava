@@ -35,8 +35,6 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-// RXTX imports
-// TODO
 /**
  *
  * @author danielpineda
@@ -111,7 +109,6 @@ public class Layout implements SerialPortDataListener {
     XYSeries dataSeriesAux7;
     XYSeries dataSeriesAux8;
     XYSeries dataSeriesAux9;
-    //XYSeriesCollection dataset;
     XYSeriesCollection dataset = new XYSeriesCollection(dataSeries);
     XYSeriesCollection finalDataset = new XYSeriesCollection();
     JFreeChart chart = ChartFactory.createXYLineChart(null, null, null, null);
@@ -134,9 +131,6 @@ public class Layout implements SerialPortDataListener {
 
         fr.setSize(fr_w, fr_h);
         fr.setResizable(false);
-        //fr.setLayout(new GridLayout(5,1));
-        //
-        //fr.setLayout(new BoxLayout(fr, BoxLayout.PAGE_AXIS));
         fr.setTitle("MicroPlotter V1.0 - By DMPT");
         fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -191,13 +185,11 @@ public class Layout implements SerialPortDataListener {
         create_plt_conf_elements(pane_plt_conf);
 
         // Plot panel
-        //pane_plt = new JPanel();
         pane_plt.setPreferredSize(new Dimension(fr_w - 2, (int) (5.5 * fr_h / 10)));
         create_plt_elements(pane_plt);
 
         // Terminal panel
         JPanel pane_term = new JPanel();
-        //pane_term.setLayout(new BoxLayout(mp, BoxLayout.Y_AXIS));
         pane_term.setPreferredSize(new Dimension(fr_w - 2, (int) (3 * fr_h / 10)));
         create_term_elements(pane_term);
 
@@ -213,16 +205,12 @@ public class Layout implements SerialPortDataListener {
         mp.add(pane_plt);
         mp.add(pane_term);
         fr.add(mp);
-        //fr.add(pane_status);
         fr.show();
     }
 
     // Method to create the port configuration elements
     private void create_port_conf_elements(JPanel panel) {
         panel.setBorder(BorderFactory.createTitledBorder("Port configuration"));
-        //panel.setSize(fr_w, 5);
-        //pane_conf.setBorder(BorderFactory.createLineBorder(Color.black));
-        //pane_conf.setBackground(Color.red);
 
         // pane_conf elements:
         // Button for searching available port
@@ -404,14 +392,11 @@ public class Layout implements SerialPortDataListener {
         term_elements_p2.setPreferredSize(new Dimension(fr_w - 20, (int) (1.6 * fr_h / 10)));
         txt_terminal = new JTextArea();
         txt_terminal.setEditable(false);
-        //txt_terminal.setPreferredSize(new Dimension(fr_w - 10, (int)(1.6 * fr_h / 10)));
         txt_terminal.setColumns(20);
         txt_terminal.setRows(6);
         JScrollPane scroll_panel_term = new JScrollPane();
         scroll_panel_term.setPreferredSize(new Dimension(fr_w - 25, (int) (1.6 * fr_h / 10 - 5)));
-        //scroll_panel_term.setAutoscrolls(false);
         scroll_panel_term.setViewportView(txt_terminal);
-        //term_elements_p2.add(txt_terminal);
         term_elements_p2.add(scroll_panel_term);
 
         sub_panel.add(term_elements_p1);
@@ -434,92 +419,64 @@ public class Layout implements SerialPortDataListener {
         });
 
         // Connecting to port
-        btn_connect.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                connect_port(btn_search, cmb_port, cmb_baud, btn_connect, btn_plot, btn_send, chk_scroll, btn_record, chk_addCR, chk_addNL);
-            }
+        btn_connect.addActionListener((ActionEvent e) -> {
+            connect_port(btn_search, cmb_port, cmb_baud, btn_connect, btn_plot, btn_send, chk_scroll, btn_record, chk_addCR, chk_addNL);
         });
 
         // Changing to dynamic plotting
-        cmb_plotPresentation.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if ((String) cmb_plotPresentation.getSelectedItem() == "Static") {
-                    cmb_dynamicSampleLimit.setEnabled(false);
-                }
-                if ((String) cmb_plotPresentation.getSelectedItem() == "Dynamic") {
-                    cmb_dynamicSampleLimit.setEnabled(true);
-                }
+        cmb_plotPresentation.addActionListener((ActionEvent e) -> {
+            if ((String) cmb_plotPresentation.getSelectedItem() == "Static") {
+                cmb_dynamicSampleLimit.setEnabled(false);
+            }
+            if ((String) cmb_plotPresentation.getSelectedItem() == "Dynamic") {
+                cmb_dynamicSampleLimit.setEnabled(true);
             }
         });
 
         // Send message to microcontroller (to both text field and send button
-        btn_send.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cont.send_message(port, chk_addCR, chk_addNL, txt_msg);
-            }
+        btn_send.addActionListener((ActionEvent e) -> {
+            cont.send_message(port, chk_addCR, chk_addNL, txt_msg);
         });
 
-        txt_msg.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cont.send_message(port, chk_addCR, chk_addNL, txt_msg);
-            }
+        txt_msg.addActionListener((ActionEvent e) -> {
+            cont.send_message(port, chk_addCR, chk_addNL, txt_msg);
         });
 
-        btn_record.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO
-
-                if (fileRecording == false) {
-                    // Creating the file
-                    JFileChooser fileChooser = new JFileChooser();
-                    fileChooser.setDialogTitle("Put a name to your file");
-                    //fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                    FileNameExtensionFilter txtFilter = new FileNameExtensionFilter(".txt files", "txt");
-                    fileChooser.setFileFilter(txtFilter);
-                    int userSelection = fileChooser.showSaveDialog(fr);
-                    File fileToSave;
-
-                    if (userSelection == JFileChooser.APPROVE_OPTION) {
-                        fileToSave = fileChooser.getSelectedFile();
-                        //fileToSave = new File(fileChooser.getName());
-                        //File fileToSave = fileChooser.getSelectedFile();
-                        //System.out.println("Save as file: " + fileToSave.getAbsolutePath());
-
-                        //File fileToSave = new File(fileChooser.getSelectedFile());
-                        fileName = fileToSave.getAbsolutePath();
-
-                        fileRecording = true;
-                        cont.record_actions(btn_record);
-                    } else {
-                        fileRecording = false;
-                    }
-                    //System.out.println(fileName);
-
-                } else if (fileRecording == true) {
-                    fileRecording = false;
+        btn_record.addActionListener((ActionEvent e) -> {
+            // TODO
+            
+            if (fileRecording == false) {
+                // Creating the file
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Put a name to your file");
+                FileNameExtensionFilter txtFilter = new FileNameExtensionFilter(".txt files", "txt");
+                fileChooser.setFileFilter(txtFilter);
+                int userSelection = fileChooser.showSaveDialog(fr);
+                File fileToSave;
+                
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    fileToSave = fileChooser.getSelectedFile();
+                    fileName = fileToSave.getAbsolutePath();
+                    
+                    fileRecording = true;
                     cont.record_actions(btn_record);
+                } else {
+                    fileRecording = false;
                 }
-
+                
+            } else if (fileRecording == true) {
+                fileRecording = false;
+                cont.record_actions(btn_record);
             }
         });
 
         // Plotting data action
         btn_plot.addActionListener((ActionEvent e) -> {
-            //cont.start_plotting(cmb_lineWidth, cmb_plotPresentation, txt_dynamicSampleLimit, cmb_xAxisType, cmb_yAxisType, btn_plot);
-            //cont.create_simple_plot(x_data, y_data, pane_plt, fr_w, fr_h);
-            // Reset plot data elements every time a new plot is initiated
             if (btn_plot.getText() == "Start plotting") {
                 x_data = 0;
                 dataSeries = new XYSeries("Data");
                 dataSeriesAux = new XYSeries("Data");
                 dataset = new XYSeriesCollection();
-                //dataset.addSeries(dataSeries);
-                //pane_plt.removeAll();
 
                 // Possible data series
                 dataSeries0 = new XYSeries("D0");
@@ -614,8 +571,6 @@ public class Layout implements SerialPortDataListener {
         SerialPort[] ports = SerialPort.getCommPorts();
         java.util.List<String> list = new ArrayList<String>();
         for (SerialPort prt : ports) {
-            //System.out.println(port.getSystemPortName());
-            //list.add(port.getSystemPortName());
 
             if (prt == null) {
                 cmb_port.addItem("No port found");
@@ -660,12 +615,7 @@ public class Layout implements SerialPortDataListener {
             chk_addNL.setEnabled(true);
 
             // Configuring and connecting to port
-            //port = (SerialPort)cmb_port.getSelectedItem();
-            //System.out.println((String)cmb_port.getSelectedItem());
             port = SerialPort.getCommPort((String) cmb_port.getSelectedItem());
-            //port.setParity(SerialPort.NO_PARITY);
-            //port.setNumStopBits(SerialPort.ONE_STOP_BIT);
-            //port.setNumDataBits(8);
             port.setBaudRate(Integer.valueOf((String) cmb_baud.getSelectedItem()));
             if (port.isOpen()) {
                 port.closePort();
@@ -678,11 +628,9 @@ public class Layout implements SerialPortDataListener {
             btn_connect.setText("Connect");
             btn_connect.setOpaque(true);
             btn_connect.setBackground(Color.gray);
-            //btn_connect.setForeground(Color.black);
 
             // Disabling some elements
             btn_plot.setEnabled(false);
-            //btn_plot.setBackground(Color.gray);
             btn_send.setEnabled(false);
             chk_scroll.setEnabled(false);
             btn_record.setEnabled(false);
@@ -698,7 +646,6 @@ public class Layout implements SerialPortDataListener {
             cmb_baud.setEnabled(true);
 
             // Close the port
-            //SerialPort port = (SerialPort)cmb_port.getSelectedItem();
             port.closePort();
 
         }
@@ -709,16 +656,13 @@ public class Layout implements SerialPortDataListener {
     public void update_terminal(String data) {
 
         Date date = new Date();
-
-        //txt_terminal.append(formatter.format(date) + "\t" + data + "\r\n");
-        //txt_terminal.setCaretPosition(txt_terminal.getDocument().getLength());
+        
         txt_terminal.append(formatter.format(date) + "\t" + data + "\r\n");
         if (chk_scroll.isSelected()) {
             txt_terminal.setCaretPosition(txt_terminal.getDocument().getLength());
         }
 
         if (fileRecording) {
-            //FileWriter fw = new FileWriter(fileName, true);
             try ( FileWriter fw = new FileWriter(fileName, true);  PrintWriter out = new PrintWriter(fw)) {
                 out.println(formatter.format(date) + "\t" + data);
 
@@ -733,16 +677,11 @@ public class Layout implements SerialPortDataListener {
     public void update_plot(String data) {
         String delimiters = "\t" + "\r" + "\n" + " ";
         StringTokenizer str = new StringTokenizer(data, delimiters);
-        //String series[] = new String[200];
         double series[] = new double[200];
         double auxf = 0;
         int columns = 0;
         while (str.hasMoreElements()) {
-            //series[columns] = str.nextToken();
-            //columns++;
             String auxStr = str.nextToken();
-            //System.out.println(auxStr);
-            
             try{
                 auxf = Double.parseDouble(auxStr);
                 series[columns] = auxf;
@@ -751,6 +690,11 @@ public class Layout implements SerialPortDataListener {
                 // Nothing
             }
             
+            // More than 9 columns are prohibited
+            if(columns > 9) {
+                columns = 9;
+                break;
+            }
         }
 
         x_data++;
@@ -759,11 +703,7 @@ public class Layout implements SerialPortDataListener {
         try {
             for (int j = 0; j < columns; j++) {
                 auxf = series[j];
-                //auxf = Float.parseFloat(series[j]);
-                //dataSeriesAux.add(x_data, auxf);
                 col_data[j] = auxf;
-                //col_data[j] = series[j];
-                //arrDataSeriesAux[j].add(x_data, auxf);
 
                 switch (j) {
                     case 0:
@@ -799,19 +739,13 @@ public class Layout implements SerialPortDataListener {
                 }
             }
 
-            //dataSeriesAux.add(x_data, col_data[0]);
-            //System.out.println(arrDataSeriesAux[0].getX(0));
-            //y_data = Float.parseFloat(data);
-            //dataSeriesAux.add(x_data, y_data); 
             elapsedTime = cont.time_counter(startTime);
 
             // Check if it is a dynamic or static plot
             if (cmb_plotPresentation.getSelectedIndex() == 0) {
                 int dataCount = dataSeriesAux0.getItemCount();
                 for (int j = 0; j < columns; j++) {
-                    //if (arrDataSeriesAux[j].getItemCount() > (Integer) cmb_dynamicSampleLimit.getSelectedItem()) {
-                    //    arrDataSeriesAux[j].remove(0);
-                    //}
+                    
                     if (dataCount > (Integer) cmb_dynamicSampleLimit.getSelectedItem()) {
                         switch (j) {
                             case 0:
@@ -848,29 +782,10 @@ public class Layout implements SerialPortDataListener {
                     }
 
                 }
-                //if (dataSeriesAux.getItemCount() > (Integer) cmb_dynamicSampleLimit.getSelectedItem()) {
-                //    dataSeriesAux.remove(0);
-                //}
             }
 
             if (elapsedTime >= updateTime && !pause) {
 
-                //Object cloneSeries = arrDataSeriesAux.clone();
-                //arrDataSeries = (XYSeries[]) cloneSeries;
-                /*
-                arrDataSeries = arrDataSeriesAux;
-
-                dataset = new XYSeriesCollection();
-                for (int j = 0; j < columns; j++) {
-                    dataset.addSeries(arrDataSeries[j]);
-                }
-                cont.create_simple_plot(arrDataSeries[0], dataset, CP, chart, pane_plt, cmb_lineWidth, cmb_xAxisType, cmb_yAxisType, fr_w, fr_h);
-                startTime = System.currentTimeMillis();
-                 */
-                //Object cloneSeries = dataSeriesAux.clone();
-                //dataSeries = (XYSeries) cloneSeries;
-                //dataset = new XYSeriesCollection(dataSeries);
-                //cont.create_simple_plot(dataSeries, dataset, CP, chart, pane_plt, cmb_lineWidth, cmb_xAxisType, cmb_yAxisType, fr_w, fr_h);
                 dataset.removeAllSeries();
                 
                 dataset = new XYSeriesCollection();
@@ -954,9 +869,7 @@ public class Layout implements SerialPortDataListener {
 
     @Override
     public void serialEvent(SerialPortEvent spe) {
-        //byte[] newData = spe.getReceivedData();
-        //System.out.println(newData);
-
+        
         inputStream = port.getInputStream();
         String dataAux = "";
 
@@ -968,10 +881,8 @@ public class Layout implements SerialPortDataListener {
             }
 
             data += dataAux;
-            //System.out.print(data);
-            //data = data.replace("\n", "").replace("\r", "");
-
-            if (data.length() == 0 || data.isBlank()) {
+            
+            if (data.length() == 0 || data.isEmpty()) {
                 // Nothing
             } else if (dataAux.contains("\n") || dataAux.contains("\r")) {
 
@@ -985,43 +896,6 @@ public class Layout implements SerialPortDataListener {
                 update_terminal(data);
                 // Reset variable
                 data = "";
-
-                /*if (btn_plot.getText() == "Stop plotting") {
-                    x_data++;
-                    y_data = Float.parseFloat(data);
-
-                    dataSeries.add(x_data, y_data);
-                    elapsedTime = cont.time_counter(startTime);
-                    cont.create_simple_plot(dataset, CP, chart, pane_plt, fr_w, fr_h);
-                    //System.out.println(dataSeries);
-                    //dataset = new XYSeriesCollection(dataSeries);
-                    //System.out.println(elapsedTime);
-                }*/
- /*
-                if (plotting) {
-                    x_data++;
-                    y_data = Float.parseFloat(data);
-                    dataSeriesAux.add(x_data, y_data);
-                    elapsedTime = cont.time_counter(startTime);
-                    
-                    // Check if it is a dynamic or static plot
-                    if (cmb_plotPresentation.getSelectedIndex() == 0) {
-                        if (dataSeriesAux.getItemCount() > (Integer) cmb_dynamicSampleLimit.getSelectedItem()) {
-                            dataSeriesAux.remove(0);
-                        }
-                    }
-
-                    if (elapsedTime >= updateTime && !pause) {
-
-                        Object cloneSeries = dataSeriesAux.clone();
-                        dataSeries = (XYSeries) cloneSeries;
-
-                        dataset = new XYSeriesCollection(dataSeries);
-                        cont.create_simple_plot(dataSeries, dataset, CP, chart, pane_plt, cmb_lineWidth, cmb_xAxisType, cmb_yAxisType, fr_w, fr_h);
-                        startTime = System.currentTimeMillis();
-                    }
-
-                }*/
             }
 
         } catch (IOException | NumberFormatException e) {
