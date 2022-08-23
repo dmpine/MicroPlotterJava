@@ -171,10 +171,6 @@ public class Control {
         // Using a renderer to improve plot quality
         XYPlot plot = (XYPlot) chart.getXYPlot();
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-        int numSeries = plot.getSeriesCount();
-        for (int i = 0; i < numSeries; i++) {
-            renderer.setSeriesStroke(i, new BasicStroke((Integer) cmb_lineWidth.getSelectedItem()));
-        }
 
         // Setting log format if activated
         if (cmb_xAxisType.getSelectedIndex() == 1) {
@@ -203,6 +199,13 @@ public class Control {
         CP.repaint();
         CP.setPreferredSize(new Dimension(fr_w - 10, (int) (5.2 * fr_h / 10 - 105)));
         panel.setLayout(new java.awt.BorderLayout());
+        
+        // Setting plot line width
+        int numSeries = plot.getSeriesCount();
+        for (int i = 0; i < numSeries; i++) {
+            renderer.setSeriesStroke(i, new BasicStroke((Integer) cmb_lineWidth.getSelectedItem()));
+        }
+        
         panel.add(CP);
         panel.validate();
     }

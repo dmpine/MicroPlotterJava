@@ -218,7 +218,7 @@ public class Layout implements SerialPortDataListener {
         // ComboBox for choosing from found ports
         cmb_port = new JComboBox<String>();
         cmb_port.addItem("No Port");
-        cmb_port.setPreferredSize(new Dimension(125, 25));
+        cmb_port.setPreferredSize(new Dimension(250, 25));
         panel.add(cmb_port);
 
         // Label and ComboBox for choosing the baud rate
@@ -280,7 +280,7 @@ public class Layout implements SerialPortDataListener {
         JLabel lbl_dynamicSampleLimit = new JLabel("Sample limit");
         sub_panel1.add(lbl_dynamicSampleLimit);
         cmb_dynamicSampleLimit = new JComboBox();
-        cmb_dynamicSampleLimit.setPreferredSize(new Dimension(70, 25));
+        cmb_dynamicSampleLimit.setPreferredSize(new Dimension(100, 25));
         cmb_dynamicSampleLimit.setEnabled(false);
         cmb_dynamicSampleLimit.addItem(20);
         cmb_dynamicSampleLimit.addItem(30);
@@ -288,6 +288,8 @@ public class Layout implements SerialPortDataListener {
         cmb_dynamicSampleLimit.addItem(50);
         cmb_dynamicSampleLimit.addItem(75);
         cmb_dynamicSampleLimit.addItem(100);
+        cmb_dynamicSampleLimit.addItem(500);
+        cmb_dynamicSampleLimit.addItem(1000);
         cmb_dynamicSampleLimit.setSelectedItem(50);
         sub_panel1.add(cmb_dynamicSampleLimit);
         JLabel lbl_updateTime = new JLabel("Update time");
