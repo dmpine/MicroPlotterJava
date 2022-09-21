@@ -10,4 +10,4 @@ dist/
 *.jar
 
 # SO Files #
-.DS_Store
+*.DS_Store

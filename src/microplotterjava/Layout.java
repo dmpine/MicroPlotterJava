@@ -451,8 +451,13 @@ public class Layout implements SerialPortDataListener {
                 fileChooser.setDialogTitle("Put a name to your file");
                 FileNameExtensionFilter txtFilter = new FileNameExtensionFilter(".txt files", "txt");
                 fileChooser.setFileFilter(txtFilter);
+                
+                // Suggesting a name
+                fileChooser.setSelectedFile(new File("Data.txt"));
+                
                 int userSelection = fileChooser.showSaveDialog(fr);
                 File fileToSave;
+                
                 
                 if (userSelection == JFileChooser.APPROVE_OPTION) {
                     fileToSave = fileChooser.getSelectedFile();
