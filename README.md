@@ -4,7 +4,9 @@
     <img src="ImagesReadme/bigLogoMPWBg.png">
 </p>
 
-Link to download ---> Here <---. Please continue reading.
+Link to download ---> Here <---. or ---> Here <---. 
+
+Please continue reading.
 
 (Alternatively, if you have some knowledge on java, know that the distribution files are located inside the dist folder as is usual. You can use those too. However, I recommend downloading the software from the link provided above since that file contains additional information and detailed documentation).
 

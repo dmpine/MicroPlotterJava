@@ -142,7 +142,7 @@ public class Layout implements SerialPortDataListener {
         
         Image iconApp;
         try {
-            iconApp = ImageIO.read(getClass().getClassLoader().getResource("Images/smallLogoMP.png"));
+            iconApp = ImageIO.read(getClass().getClassLoader().getResource("Images/smallLogoMPclean.ico"));
             fr.setIconImage(iconApp);
         } catch (IOException e) {
             // BU
