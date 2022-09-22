@@ -140,7 +140,7 @@ public class Layout implements SerialPortDataListener {
         menubar.add(window);
         JMenuItem about = new JMenuItem("About");
         window.add(about);
-        
+
         Image iconApp;
         try {
             iconApp = ImageIO.read(getClass().getClassLoader().getResource("Images/smallLogoMPclean.ico"));
@@ -449,31 +449,30 @@ public class Layout implements SerialPortDataListener {
 
         btn_record.addActionListener((ActionEvent e) -> {
             // TODO
-            
+
             if (fileRecording == false) {
                 // Creating the file
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Put a name to your file");
                 FileNameExtensionFilter txtFilter = new FileNameExtensionFilter(".txt files", "txt");
                 fileChooser.setFileFilter(txtFilter);
-                
+
                 // Suggesting a name
                 fileChooser.setSelectedFile(new File("Data.txt"));
-                
+
                 int userSelection = fileChooser.showSaveDialog(fr);
                 File fileToSave;
-                
-                
+
                 if (userSelection == JFileChooser.APPROVE_OPTION) {
                     fileToSave = fileChooser.getSelectedFile();
                     fileName = fileToSave.getAbsolutePath();
-                    
+
                     fileRecording = true;
                     cont.record_actions(btn_record);
                 } else {
                     fileRecording = false;
                 }
-                
+
             } else if (fileRecording == true) {
                 fileRecording = false;
                 cont.record_actions(btn_record);
@@ -512,7 +511,7 @@ public class Layout implements SerialPortDataListener {
                 dataSeriesAux9 = new XYSeries("D9");
 
                 startTime = System.currentTimeMillis();
-                
+
             }
 
             cont.plotting_form_actions(cmb_lineWidth, cmb_plotPresentation,
@@ -660,18 +659,23 @@ public class Layout implements SerialPortDataListener {
         Date date = new Date();
         if (chk_tstamp.isSelected()) {
             txt_terminal.append(formatter.format(date) + "\t" + data + "\r\n");
-        } else{
+        } else {
             txt_terminal.append(data + "\r\n");
         }
-        
+
         if (chk_scroll.isSelected()) {
             txt_terminal.setCaretPosition(txt_terminal.getDocument().getLength());
         }
 
         if (fileRecording) {
             try ( FileWriter fw = new FileWriter(fileName, true);  PrintWriter out = new PrintWriter(fw)) {
-                out.println(formatter.format(date) + "\t" + data);
 
+                if (chk_tstamp.isSelected()) {
+                    out.println(formatter.format(date) + "\t" + data);
+                } else {
+                    out.println(data);
+                }
+                
             } catch (IOException e) {
                 // Bu
             }
@@ -688,16 +692,16 @@ public class Layout implements SerialPortDataListener {
         int columns = 0;
         while (str.hasMoreElements()) {
             String auxStr = str.nextToken();
-            try{
+            try {
                 auxf = Double.parseDouble(auxStr);
                 series[columns] = auxf;
                 columns++;
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 // Nothing
             }
-            
+
             // More than 9 columns are prohibited
-            if(columns > 9) {
+            if (columns > 9) {
                 columns = 9;
                 break;
             }
@@ -749,7 +753,7 @@ public class Layout implements SerialPortDataListener {
             if (cmb_plotPresentation.getSelectedIndex() == 0) {
                 int dataCount = dataSeriesAux0.getItemCount();
                 for (int j = 0; j < columns; j++) {
-                    
+
                     if (dataCount > (Integer) cmb_dynamicSampleLimit.getSelectedItem()) {
                         switch (j) {
                             case 0:
@@ -791,7 +795,7 @@ public class Layout implements SerialPortDataListener {
             if (elapsedTime >= updateTime && !pause) {
 
                 dataset.removeAllSeries();
-                
+
                 dataset = new XYSeriesCollection();
                 for (int j = 0; j < columns; j++) {
                     switch (j) {
@@ -872,7 +876,7 @@ public class Layout implements SerialPortDataListener {
 
     @Override
     public void serialEvent(SerialPortEvent spe) {
-        
+
         inputStream = port.getInputStream();
         String dataAux = "";
 
@@ -884,7 +888,7 @@ public class Layout implements SerialPortDataListener {
             }
 
             data += dataAux;
-            
+
             if (data.length() == 0 || data.isEmpty()) {
                 // Nothing
             } else if (dataAux.contains("\n") || dataAux.contains("\r")) {
@@ -893,15 +897,15 @@ public class Layout implements SerialPortDataListener {
                 data = data.replace("\n", "").replace("\r", "");
 
                 // Last verification after cleaning the data
-                if(data.length() == 0 || data.isEmpty()){
+                if (data.length() == 0 || data.isEmpty()) {
                     // Do nothing
-                } else{
+                } else {
                     if (plotting) {
                         update_plot(data);
                     }
                     update_terminal(data);
                 }
-                
+
                 // Always reset variable
                 data = "";
             }
