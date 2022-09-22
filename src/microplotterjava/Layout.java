@@ -617,8 +617,18 @@ public class Layout implements SerialPortDataListener {
             chk_addNL.setEnabled(true);
 
             // Configuring and connecting to port
+            int BaudRate = Integer.valueOf((String) cmb_baud.getSelectedItem());
+            int DataBits = 8;
+            int StopBits = SerialPort.ONE_STOP_BIT;
+            int Parity = SerialPort.NO_PARITY;
+            //int Parity   = SerialPort.ODD_PARITY;
             port = SerialPort.getCommPort((String) cmb_port.getSelectedItem());
-            port.setBaudRate(Integer.valueOf((String) cmb_baud.getSelectedItem()));
+            port.setComPortParameters(BaudRate, // Baud
+                    DataBits, // NBits
+                    StopBits, // Stop
+                    Parity); // Parity
+
+            //port.setBaudRate(Integer.valueOf((String) cmb_baud.getSelectedItem()));
             if (port.isOpen()) {
                 port.closePort();
             }
@@ -669,13 +679,17 @@ public class Layout implements SerialPortDataListener {
 
         if (fileRecording) {
             try ( FileWriter fw = new FileWriter(fileName, true);  PrintWriter out = new PrintWriter(fw)) {
+                //FileWriter fw = new FileWriter(fileName, true);  
+                //PrintWriter out = new PrintWriter(fw);
 
                 if (chk_tstamp.isSelected()) {
                     out.println(formatter.format(date) + "\t" + data);
+                    //fw.write(formatter.format(date) + "\t" + data + "\r\n");
                 } else {
                     out.println(data);
+                    //fw.write(data + "\r\n");
                 }
-                
+
             } catch (IOException e) {
                 // Bu
             }
@@ -877,21 +891,25 @@ public class Layout implements SerialPortDataListener {
     @Override
     public void serialEvent(SerialPortEvent spe) {
 
-        inputStream = port.getInputStream();
-        String dataAux = "";
+        if (spe.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
+            return;
+        }
 
         try {
-            byte[] readBuffer = new byte[inputStream.available()];
+            inputStream = port.getInputStream();
+            String dataAux = "";
+            
             while (inputStream.available() > 0) {
+                byte[] readBuffer = new byte[inputStream.available()];
                 inputStream.read(readBuffer);
                 dataAux += new String(readBuffer);
             }
 
             data += dataAux;
 
-            if (data.length() == 0 || data.isEmpty()) {
+            if (data.length() < 2 || data.isEmpty()) {
                 // Nothing
-            } else if (dataAux.contains("\n") || dataAux.contains("\r")) {
+            } else if (dataAux.contains("\n")) {
 
                 // Remove some characters
                 data = data.replace("\n", "").replace("\r", "");
@@ -910,8 +928,8 @@ public class Layout implements SerialPortDataListener {
                 data = "";
             }
 
-        } catch (IOException | NumberFormatException e) {
-            // Bu
+        } catch (Exception e) {
+            // BuIOException | NumberFormatException
         }
 
     }
