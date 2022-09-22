@@ -71,6 +71,7 @@ public class Layout implements SerialPortDataListener {
     JButton btn_send;
     JCheckBox chk_addCR;
     JCheckBox chk_addNL;
+    JCheckBox chk_tstamp;
     JCheckBox chk_scroll;
     JButton btn_record;
     boolean fileRecording = false;
@@ -366,10 +367,12 @@ public class Layout implements SerialPortDataListener {
         btn_send = new JButton("Send");
         btn_send.setPreferredSize(new Dimension(75, 25));
         btn_send.setEnabled(false);
-        JLabel lbl_scroll = new JLabel("Auto-scroll");
+        JLabel lbl_tstamp = new JLabel("TimeStamp");
+        chk_tstamp = new JCheckBox();
+        chk_tstamp.setSelected(true);
+        JLabel lbl_scroll = new JLabel("AutoScroll");
         chk_scroll = new JCheckBox();
         chk_scroll.setSelected(true);
-        chk_scroll.setEnabled(false);
         // Button for recording incomming data
         btn_record = new JButton("Begin rec");
         btn_record.setPreferredSize(new Dimension(100, 25));
@@ -384,6 +387,8 @@ public class Layout implements SerialPortDataListener {
         term_elements_p1.add(chk_addCR);
         term_elements_p1.add(lbl_addNL);
         term_elements_p1.add(chk_addNL);
+        term_elements_p1.add(lbl_tstamp);
+        term_elements_p1.add(chk_tstamp);
         term_elements_p1.add(lbl_scroll);
         term_elements_p1.add(chk_scroll);
         term_elements_p1.add(btn_record);
@@ -420,7 +425,7 @@ public class Layout implements SerialPortDataListener {
 
         // Connecting to port
         btn_connect.addActionListener((ActionEvent e) -> {
-            connect_port(btn_search, cmb_port, cmb_baud, btn_connect, btn_plot, btn_send, chk_scroll, btn_record, chk_addCR, chk_addNL);
+            connect_port(btn_search, cmb_port, cmb_baud, btn_connect, btn_plot, btn_send, btn_record, chk_addCR, chk_addNL);
         });
 
         // Changing to dynamic plotting
@@ -590,7 +595,7 @@ public class Layout implements SerialPortDataListener {
     // Method to connect to serial device
     public void connect_port(JButton btn_search, JComboBox cmb_port,
             JComboBox cmb_baud, JButton btn_connect,
-            JButton btn_plot, JButton btn_send, JCheckBox chk_scroll,
+            JButton btn_plot, JButton btn_send,
             JButton btn_record, JCheckBox chk_addCR, JCheckBox chk_addNL) {
 
         if ("Connect".equals(btn_connect.getText())) {
@@ -608,7 +613,6 @@ public class Layout implements SerialPortDataListener {
             // Enabling some elements
             btn_plot.setEnabled(true);
             btn_send.setEnabled(true);
-            chk_scroll.setEnabled(true);
             btn_record.setEnabled(true);
             chk_addCR.setEnabled(true);
             chk_addNL.setEnabled(true);
@@ -631,7 +635,6 @@ public class Layout implements SerialPortDataListener {
             // Disabling some elements
             btn_plot.setEnabled(false);
             btn_send.setEnabled(false);
-            chk_scroll.setEnabled(false);
             btn_record.setEnabled(false);
             btn_record.setText("Begin rec");
             btn_record.setBackground(Color.gray);
@@ -655,8 +658,12 @@ public class Layout implements SerialPortDataListener {
     public void update_terminal(String data) {
 
         Date date = new Date();
+        if (chk_tstamp.isSelected()) {
+            txt_terminal.append(formatter.format(date) + "\t" + data + "\r\n");
+        } else{
+            txt_terminal.append(data + "\r\n");
+        }
         
-        txt_terminal.append(formatter.format(date) + "\t" + data + "\r\n");
         if (chk_scroll.isSelected()) {
             txt_terminal.setCaretPosition(txt_terminal.getDocument().getLength());
         }

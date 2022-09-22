@@ -28,6 +28,6 @@ public class MicroPlotterJava {
     }
     
     public static void MicroPlotterJava(){
-        Layout LYT = new Layout(870, 725);
+        Layout LYT = new Layout(990, 730);
     }
 }
