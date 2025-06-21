@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_451"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="Images"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/daelp/eclipse-workspace/MicroPlotter/lib/jcommon-1.0.24.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/daelp/eclipse-workspace/MicroPlotter/lib/jfreechart-1.0.19.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/daelp/eclipse-workspace/MicroPlotter/lib/jSerialComm-2.11.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

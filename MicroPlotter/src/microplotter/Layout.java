@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package microplotterjava;
+package microplotter;
 
 // Serial imports
 import com.fazecast.jSerialComm.SerialPort;
@@ -143,7 +143,7 @@ public class Layout implements SerialPortDataListener {
 
         Image iconApp;
         try {
-            iconApp = ImageIO.read(getClass().getClassLoader().getResource("Images/smallLogoMPclean.ico"));
+            iconApp = ImageIO.read(getClass().getClassLoader().getResource("smallLogoMPclean.ico"));
             fr.setIconImage(iconApp);
         } catch (IOException e) {
             // BU
@@ -151,19 +151,23 @@ public class Layout implements SerialPortDataListener {
 
         about.addActionListener(new java.awt.event.ActionListener() {
             String msg = "Hi! My name is Daniel Pineda. I hope MicroPlotter turns out to be useful\r\n"
-                    + "for you. I developed this software as a fun personal exercise.\r\n"
-                    + "Hence, here is a little disclaimer: this software comes with no guarantee,\r\n"
-                    + "as is usual for most of free opensource applications. You are using this\r\n"
-                    + "software under your own risk. That is all for the disclaimer. Please, feel\r\n"
-                    + "free to use this software as you like.\r\n"
-                    + "Contact email:dmpinedat@outlook.com\r\n"
-                    + "Have a nice day.\r\n"
-                    + "By the way, I also designed the logo, turned out cool didn't it?\r\n";
-
+                + "for you. I developed this software as a fun personal exercise.\r\n"
+                + "Hence, here is a little disclaimer: this software comes with no guarantee,\r\n"
+                + "as is usual for most of free opensource applications. You are using this\r\n"
+                + "software under your own risk. That is all for the disclaimer. Please, feel\r\n"
+                + "free to use this software as you like.\r\n"
+                + "Contact email:dmpinetat@outlook.com\r\n"
+                + "Have a nice day.\r\n"
+                + "By the way, I also designed the logo, turned out cool didn't it?\r\n";
+            
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ImageIcon icon;
-                icon = new ImageIcon(getClass().getClassLoader().getResource("Images/smallLogoMP.png"));
+                ImageIcon icon = null;
+                try {
+                    icon = new ImageIcon(getClass().getClassLoader().getResource("smallLogoMP.png"));
+                } catch (Exception e) {
+                    // Use default icon if image not found
+                }
                 JOptionPane.showMessageDialog(null, msg, "Please read!", JOptionPane.INFORMATION_MESSAGE, icon);
             }
         });

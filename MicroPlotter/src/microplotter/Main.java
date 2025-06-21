@@ -1,19 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
-package microplotterjava;
+package microplotter;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 /**
- *
- * @author danielpineda
- */
-public class MicroPlotterJava {
-
+*
+* @author danielpineda
+*/
+public class Main {
     public static void main(String[] args) {
+        System.out.println("Starting MicroPlotter...");
         
         try {
             // Setting theme
@@ -24,10 +20,11 @@ public class MicroPlotterJava {
            // Booo
         }
         
-        MicroPlotterJava();
+        MicroPlotter();
+        
     }
     
-    public static void MicroPlotterJava(){
+    public static void MicroPlotter(){
         Layout LYT = new Layout(990, 730);
     }
 }
