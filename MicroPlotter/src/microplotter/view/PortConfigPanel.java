@@ -16,6 +16,7 @@ import microplotter.utils.Constants;
  * connecting to a serial port, including baud rate selection. Its code is
  * extracted from the original Layout.create_port_conf_elements method.
  */
+@SuppressWarnings("serial")
 public class PortConfigPanel extends JPanel {
 
     /** @brief The button to trigger a search for available serial ports. */

@@ -15,6 +15,7 @@ import microplotter.utils.Constants;
  * @brief A JPanel containing UI components for plot configuration.
  * (documentation comments omitted for brevity)
  */
+@SuppressWarnings("serial")
 public class PlotConfigPanel extends JPanel {
 
     private JComboBox<Integer> lineWidthComboBox;

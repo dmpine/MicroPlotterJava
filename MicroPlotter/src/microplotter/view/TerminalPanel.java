@@ -21,6 +21,7 @@ import javax.swing.JTextField;
  * configuration checkboxes. Its code is extracted from the original
  * Layout.create_term_elements method.
  */
+@SuppressWarnings("serial")
 public class TerminalPanel extends JPanel {
 
     /** @brief The text field for user input to be sent over serial. */
@@ -95,12 +96,13 @@ public class TerminalPanel extends JPanel {
     }
     
     /**
-     * @brief Appends a line of text to the terminal display area.
-     * @details Optionally prepends a formatted timestamp and handles auto-scrolling
-     * to the latest entry based on the corresponding checkbox states.
+     * @brief Appends a line of text to the terminal display area and returns the formatted string.
+     * @details Optionally prepends a formatted timestamp and handles auto-scrolling.
+     * It now returns the final string that was appended to the text area.
      * @param data The string data to append to the terminal.
+     * @return The fully formatted string that was displayed.
      */
-    public void appendText(String data) {
+    public String appendText(String data) {
         String textToAppend = data;
         if (timestampCheckBox.isSelected()) {
             textToAppend = formatter.format(new Date()) + "\t" + data;
@@ -110,6 +112,7 @@ public class TerminalPanel extends JPanel {
         if (autoScrollCheckBox.isSelected()) {
             terminalTextArea.setCaretPosition(terminalTextArea.getDocument().getLength());
         }
+        return textToAppend; // Return the final, formatted string
     }
 
     /**

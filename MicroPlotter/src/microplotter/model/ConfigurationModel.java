@@ -1,7 +1,5 @@
 package microplotter.model;
 
-import microplotter.utils.Constants;
-
 /**
  * @brief Holds the application's configuration and run-time state.
  * @details This class acts as a central repository for all user-configurable settings

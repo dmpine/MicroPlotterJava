@@ -34,7 +34,7 @@ public class ApplicationController {
 
         // 3. Instantiate Controllers
         PlotController plotController = new PlotController(mainWindow, plotDataModel, configModel); 
-        SerialController serialController = new SerialController(mainWindow, serialManager, configModel, fileManager, plotController); 
+        new SerialController(mainWindow, serialManager, configModel, fileManager, plotController); 
 
         // 4. Make the application visible
         mainWindow.setVisible(true); 

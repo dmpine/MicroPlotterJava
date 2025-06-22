@@ -21,8 +21,6 @@ import microplotter.view.PlotPanel;
  */
 public class PlotController {
 
-    /** @brief The main application window, used to access UI panels. */
-    private final MainWindow mainWindow;
     /** @brief The model holding the plot data series. */
     private final PlotDataModel plotDataModel;
     /** @brief The model holding the application's configuration and state. */
@@ -45,7 +43,6 @@ public class PlotController {
      * @param configModel The application's configuration model.
      */
     public PlotController(MainWindow mainWindow, PlotDataModel plotDataModel, ConfigurationModel configModel) {
-        this.mainWindow = mainWindow;
         this.plotDataModel = plotDataModel;
         this.configModel = configModel;
         this.plotConfigPanel = mainWindow.getPlotConfigPanel();

@@ -20,6 +20,7 @@ import org.jfree.data.xy.XYSeriesCollection;
  * to update the plot with new data and to configure its visual appearance, such as
  * line thickness and axis types. Its logic is adapted from the original Layout and Control classes.
  */
+@SuppressWarnings("serial")
 public class PlotPanel extends JPanel {
 
     /** @brief The JFreeChart panel that hosts the chart itself. */

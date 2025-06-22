@@ -255,16 +255,20 @@ public class SerialController implements SerialPortDataListener {
     /**
      * @brief Processes a single, complete line of data received from the serial port.
      * @details This method ensures that all UI updates happen on the Event Dispatch Thread (EDT).
-     * It forwards the data line to the terminal for display, to the file manager for recording,
-     * and to the plot controller for plotting.
+     * It forwards the data line to the terminal, the file manager, and the plot controller.
      * @param line The complete data string, without newline characters.
      */
     private void processReceivedLine(final String line) {
         SwingUtilities.invokeLater(() -> {
-            terminalPanel.appendText(line);
+            // First, append the text to the terminal and capture the final, formatted string.
+            String displayedLine = terminalPanel.appendText(line);
+
+            // If recording, write the fully formatted (timestamped) string to the file.
             if (fileManager.isRecording()) {
-                fileManager.writeData(line);
+                fileManager.writeData(displayedLine);
             }
+
+            // The plot controller still receives the original, raw line for parsing.
             if (configModel.isPlotting()) {
                 plotController.processData(line);
             }
