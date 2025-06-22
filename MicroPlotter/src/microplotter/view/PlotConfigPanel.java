@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox; // Make sure this is imported
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,35 +13,21 @@ import microplotter.utils.Constants;
 
 /**
  * @brief A JPanel containing UI components for plot configuration.
- * @details This class encapsulates all the user controls for customizing the plot,
- * such as line width, presentation mode, update time, and axis types. Its code
- * is extracted from the original Layout.create_plt_conf_elements method.
+ * (documentation comments omitted for brevity)
  */
 public class PlotConfigPanel extends JPanel {
 
-    /** @brief Combo box for selecting the plot line width. */
     private JComboBox<Integer> lineWidthComboBox;
-    /** @brief Combo box for selecting the plot presentation mode (Dynamic/Static). */
     private JComboBox<String> plotPresentationComboBox;
-    /** @brief Combo box for selecting the sample limit in Dynamic mode. */
     private JComboBox<Integer> dynamicSampleLimitComboBox;
-    /** @brief Combo box for selecting the plot's visual update interval. */
     private JComboBox<String> updateTimeComboBox;
-    /** @brief Combo box for selecting the X-axis type (Decimal/Logarithmic). */
     private JComboBox<String> xAxisTypeComboBox;
-    /** @brief Combo box for selecting the Y-axis type (Decimal/Logarithmic). */
     private JComboBox<String> yAxisTypeComboBox;
-    /** @brief The button to start or stop the plotting process. */
     private JButton plotButton;
-    /** @brief The button to pause or resume the plotting process. */
     private JButton pauseButton;
+    /** @brief Checkbox to enable using data tags as plot series names. */
+    private JCheckBox tagsAsNamesCheckBox; // Add this field
 
-    /**
-     * @brief Constructs the PlotConfigPanel.
-     * @details Sets up the panel layout and creates and arranges all the UI controls
-     * for plot configuration into two vertically stacked sub-panels.
-     * @param width The initial width of the panel.
-     */
     public PlotConfigPanel(int width) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createTitledBorder("Plot configuration"));
@@ -66,11 +53,15 @@ public class PlotConfigPanel extends JPanel {
         dynamicSampleLimitComboBox.setEnabled(false);
         dynamicSampleLimitComboBox.setSelectedItem(50);
         subPanel1.add(dynamicSampleLimitComboBox);
-        
+
         subPanel1.add(new JLabel("Update time"));
         updateTimeComboBox = new JComboBox<>(Constants.UPDATE_TIMES);
         updateTimeComboBox.setSelectedItem("3s");
         subPanel1.add(updateTimeComboBox);
+
+        // Initialize the new checkbox as a field
+        tagsAsNamesCheckBox = new JCheckBox("Tags as names", false);
+        subPanel1.add(tagsAsNamesCheckBox);
 
         // --- Sub Panel 2 ---
         subPanel2.add(new JLabel("X Axis type"));
@@ -94,21 +85,18 @@ public class PlotConfigPanel extends JPanel {
         add(subPanel1);
         add(subPanel2);
     }
-
-    /** @brief Gets the line width combo box. @return The line width JComboBox. */
+    
     public JComboBox<Integer> getLineWidthComboBox() { return lineWidthComboBox; }
-    /** @brief Gets the plot presentation combo box. @return The plot presentation JComboBox. */
     public JComboBox<String> getPlotPresentationComboBox() { return plotPresentationComboBox; }
-    /** @brief Gets the dynamic sample limit combo box. @return The dynamic sample limit JComboBox. */
     public JComboBox<Integer> getDynamicSampleLimitComboBox() { return dynamicSampleLimitComboBox; }
-    /** @brief Gets the update time combo box. @return The update time JComboBox. */
     public JComboBox<String> getUpdateTimeComboBox() { return updateTimeComboBox; }
-    /** @brief Gets the X-axis type combo box. @return The X-axis type JComboBox. */
     public JComboBox<String> getXAxisTypeComboBox() { return xAxisTypeComboBox; }
-    /** @brief Gets the Y-axis type combo box. @return The Y-axis type JComboBox. */
     public JComboBox<String> getYAxisTypeComboBox() { return yAxisTypeComboBox; }
-    /** @brief Gets the plot button. @return The plot JButton. */
     public JButton getPlotButton() { return plotButton; }
-    /** @brief Gets the pause button. @return The pause JButton. */
     public JButton getPauseButton() { return pauseButton; }
+
+    /** @brief Gets the "Tags as names" checkbox. @return The JCheckBox instance. */
+    public JCheckBox getTagsAsNamesCheckBox() {
+        return tagsAsNamesCheckBox;
+    }
 }

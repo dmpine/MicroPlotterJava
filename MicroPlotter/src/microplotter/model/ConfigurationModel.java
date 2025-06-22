@@ -31,6 +31,9 @@ public class ConfigurationModel {
     private String xAxisType = "Dec";
     /** @brief The type of the Y-axis ("Dec" or "Log").  */
     private String yAxisType = "Dec";
+    
+    /** @brief Flag to use tags from serial data as series names in the plot. */
+    private boolean useTagsAsNames = false; 
 
     // --- Terminal and Recording State ---
     /** @brief Flag indicating if incoming data is being recorded to a file. */
@@ -46,6 +49,21 @@ public class ConfigurationModel {
     /** @brief Flag to enable auto-scrolling in the terminal.  */
     private boolean autoScroll = true;
 
+    /**
+     * @brief Checks if the "Tags as names" feature is enabled.
+     * @return True if tags should be used as series names, false otherwise.
+     */
+    public boolean useTagsAsNames() {
+        return useTagsAsNames;
+    }
+    
+    /**
+     * @brief Sets the state of the "Tags as names" feature.
+     * @param useTagsAsNames The new state.
+     */
+    public void setUseTagsAsNames(boolean useTagsAsNames) {
+        this.useTagsAsNames = useTagsAsNames;
+    }
 
     /**
      * @brief Checks if the serial port is connected.

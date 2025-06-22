@@ -105,13 +105,37 @@ public class PlotDataModel {
     }
     
     /**
+     * @brief Sets the display name (key) for a specific series.
+     * @param seriesIndex The index of the series to rename.
+     * @param name The new name for the series legend.
+     */
+    public void setSeriesName(int seriesIndex, String name) {
+        if (seriesIndex >= 0 && seriesIndex < dataSeries.size()) {
+            // Use setKey to change the legend name
+            dataSeries.get(seriesIndex).setKey(name);
+        }
+    }
+
+    /**
+     * @brief Resets all series names to their default "D0", "D1", etc.
+     */
+    public void resetSeriesNames() {
+        for (int i = 0; i < maxSeries; i++) {
+            if (i < dataSeries.size()) {
+                dataSeries.get(i).setKey("D" + i);
+            }
+        }
+    }
+    
+    /**
      * @brief Clears all data from all series and resets the X-counter.
      * @details This is used to prepare the model for a new plotting session.
      */
     public void clearData() {
-        for (XYSeries series : dataSeries) {
+        for(XYSeries series : dataSeries) {
             series.clear();
         }
         xCounter = 0;
+        resetSeriesNames(); // Also reset names when clearing data
     }
 }

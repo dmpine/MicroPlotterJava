@@ -96,14 +96,14 @@ public class PlotController {
         } else {
             // --- START PLOTTING ---
             configModel.setPlotting(true);
-            plotDataModel.clearData();
+            plotDataModel.clearData(); // This now also resets series names
             plotPanel.clearPlot();
             dataBuffer.clear();
-
+            
             updateConfigFromUI();
             plotUpdateTimer.setDelay((int) (configModel.getUpdateTime() * 1000));
             plotUpdateTimer.start();
-
+            
             plotConfigPanel.getPlotButton().setText("Stop plotting");
             plotConfigPanel.getPlotButton().setBackground(Color.red);
             plotConfigPanel.getPauseButton().setEnabled(true);
@@ -153,9 +153,13 @@ public class PlotController {
                 return;
             }
             for (String line : dataBuffer) {
-                DataProcessor.ParsedData parsedData = DataProcessor.parseSerialData(line);
-                if (parsedData.columnCount > 0) {
+            	DataProcessor.ParsedData parsedData = DataProcessor.parseSerialData(line, configModel.useTagsAsNames());
+            	if (parsedData.columnCount > 0) {
                     for (int i = 0; i < parsedData.columnCount; i++) {
+                        // If a tag was found, update the series name
+                        if (parsedData.tags[i] != null) {
+                            plotDataModel.setSeriesName(i, parsedData.tags[i]);
+                        }
                         plotDataModel.addDataPoint(i, parsedData.values[i]);
                     }
                     plotDataModel.incrementXCounter();
@@ -193,6 +197,8 @@ public class PlotController {
 
         String timeStr = (String) plotConfigPanel.getUpdateTimeComboBox().getSelectedItem();
         configModel.setUpdateTime(Double.parseDouble(timeStr.replace("s", "")));
+        
+        configModel.setUseTagsAsNames(plotConfigPanel.getTagsAsNamesCheckBox().isSelected());
     }
 
     /**
@@ -206,6 +212,8 @@ public class PlotController {
         plotConfigPanel.getUpdateTimeComboBox().setEnabled(enabled);
         plotConfigPanel.getXAxisTypeComboBox().setEnabled(enabled);
         plotConfigPanel.getYAxisTypeComboBox().setEnabled(enabled);
+        
+        plotConfigPanel.getTagsAsNamesCheckBox().setEnabled(enabled);
 
         if (enabled && "Dynamic".equals(plotConfigPanel.getPlotPresentationComboBox().getSelectedItem())) {
              plotConfigPanel.getDynamicSampleLimitComboBox().setEnabled(true);
