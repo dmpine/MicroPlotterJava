@@ -34,6 +34,15 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+// For listeners
+import microplotter.listeners.*;
+
+// For constants
+import microplotter.utils.*;
+
+// For data processor
+import microplotter.model.DataProcessor;
+
 /**
  *
  * @author danielpineda
@@ -43,6 +52,10 @@ public class Layout implements SerialPortDataListener {
     // Frame dimensions variables
     private final int fr_w;
     private final int fr_h;
+    
+    // Listeners
+    private java.util.List<SerialDataListener> serialDataListeners = new java.util.ArrayList<>();
+    private java.util.List<PlotUpdateListener> plotUpdateListeners = new java.util.ArrayList<>();
 
     JFrame fr = new JFrame();
 
@@ -125,12 +138,11 @@ public class Layout implements SerialPortDataListener {
      */
     public Layout(int afr_w, int afr_h) {
 
-        fr_w = afr_w;
+    	fr_w = afr_w;
         fr_h = afr_h;
-
         fr.setSize(fr_w, fr_h);
         fr.setResizable(false);
-        fr.setTitle("MicroPlotter V1.0 - By DMPT");
+        fr.setTitle(Constants.APP_TITLE); // USE CONSTANT HERE
         fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Adding a menu bar
@@ -143,10 +155,10 @@ public class Layout implements SerialPortDataListener {
 
         Image iconApp;
         try {
-            iconApp = ImageIO.read(getClass().getClassLoader().getResource("smallLogoMPclean.ico"));
+            iconApp = ImageIO.read(getClass().getClassLoader().getResource("" + Constants.LOGO_ICO));
             fr.setIconImage(iconApp);
         } catch (IOException e) {
-            // BU
+            System.err.println("Could not load application icon");
         }
 
         about.addActionListener(new java.awt.event.ActionListener() {
@@ -210,6 +222,27 @@ public class Layout implements SerialPortDataListener {
         fr.add(mp);
         fr.show();
     }
+    
+    // Add these methods to Layout class
+    public void addSerialDataListener(SerialDataListener listener) {
+        serialDataListeners.add(listener);
+    }
+
+    public void addPlotUpdateListener(PlotUpdateListener listener) {
+        plotUpdateListeners.add(listener);
+    }
+
+    private void notifySerialDataReceived(String data) {
+        for (SerialDataListener listener : serialDataListeners) {
+            listener.onDataReceived(data);
+        }
+    }
+
+    private void notifyConnectionStatusChanged(boolean connected) {
+        for (SerialDataListener listener : serialDataListeners) {
+            listener.onConnectionStatusChanged(connected);
+        }
+    }
 
     // Method to create the port configuration elements
     private void create_port_conf_elements(JPanel panel) {
@@ -229,19 +262,8 @@ public class Layout implements SerialPortDataListener {
         // Label and ComboBox for choosing the baud rate
         JLabel lbl_baud = new JLabel("Baud rate:");
         panel.add(lbl_baud);
-        cmb_baud = new JComboBox();
-        cmb_baud.addItem("300");
-        cmb_baud.addItem("600");
-        cmb_baud.addItem("1200");
-        cmb_baud.addItem("2400");
-        cmb_baud.addItem("4800");
-        cmb_baud.addItem("9600");
-        cmb_baud.addItem("14400");
-        cmb_baud.addItem("19200");
-        cmb_baud.addItem("28800");
-        cmb_baud.addItem("38400");
-        cmb_baud.addItem("57600");
-        cmb_baud.addItem("115200");
+        cmb_baud = new JComboBox<>(Constants.BAUD_RATES);
+        cmb_baud.setSelectedItem(Constants.DEFAULT_BAUD_RATE);
         cmb_baud.setSelectedItem("9600");
 
         panel.add(cmb_baud);
@@ -703,33 +725,17 @@ public class Layout implements SerialPortDataListener {
 
     // Method to update plot
     public void update_plot(String data) {
-        String delimiters = "\t" + "\r" + "\n" + " ";
-        StringTokenizer str = new StringTokenizer(data, delimiters);
-        double series[] = new double[200];
-        double auxf = 0;
-        int columns = 0;
-        while (str.hasMoreElements()) {
-            String auxStr = str.nextToken();
-            try {
-                auxf = Double.parseDouble(auxStr);
-                series[columns] = auxf;
-                columns++;
-            } catch (NumberFormatException e) {
-                // Nothing
-            }
-
-            // More than 9 columns are prohibited
-            if (columns > 9) {
-                columns = 9;
-                break;
-            }
-        }
+    	DataProcessor.ParsedData parsedData = DataProcessor.parseSerialData(data);
+        double[] series = parsedData.values;
+        int columns = parsedData.columnCount;
+        
+        if (columns == 0) return; // No valid data
 
         x_data++;
 
         try {
             for (int j = 0; j < columns; j++) {
-                auxf = series[j];
+            	double auxf = series[j];
 
                 switch (j) {
                     case 0:
@@ -878,7 +884,7 @@ public class Layout implements SerialPortDataListener {
             }
 
         } catch (CloneNotSupportedException | NumberFormatException e) {
-            //System.out.println(e);
+        	System.err.println("Plot update error: " + e.getMessage());
         }
 
     }
@@ -894,7 +900,6 @@ public class Layout implements SerialPortDataListener {
 
     @Override
     public void serialEvent(SerialPortEvent spe) {
-
         if (spe.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
             return;
         }
@@ -902,7 +907,6 @@ public class Layout implements SerialPortDataListener {
         try {
             inputStream = port.getInputStream();
             String dataAux = "";
-            
             while (inputStream.available() > 0) {
                 byte[] readBuffer = new byte[inputStream.available()];
                 inputStream.read(readBuffer);
@@ -910,33 +914,31 @@ public class Layout implements SerialPortDataListener {
             }
 
             data += dataAux;
-
             if (data.length() < 2 || data.isEmpty()) {
                 // Nothing
             } else if (dataAux.contains("\n")) {
-
-                // Remove some characters
                 data = data.replace("\n", "").replace("\r", "");
-
-                // Last verification after cleaning the data
+                
                 if (data.length() == 0 || data.isEmpty()) {
                     // Do nothing
                 } else {
-                    if (plotting) {
-                        update_plot(data);
-                    }
-                    update_terminal(data);
+                    final String finalData = data; // Make final for lambda
+                    
+                    // THIS IS THE KEY FIX - Update UI on EDT
+                    SwingUtilities.invokeLater(() -> {
+                        if (plotting) {
+                            update_plot(finalData);
+                        }
+                        update_terminal(finalData);
+                    });
                 }
-
-                // Always reset variable
                 data = "";
             }
-
         } catch (Exception e) {
-            // BuIOException | NumberFormatException
+            System.err.println("Serial event error: " + e.getMessage());
         }
-
     }
+
 
     // Method to append data to array
     public void append(float[] array, float number) {
