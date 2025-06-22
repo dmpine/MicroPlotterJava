@@ -15,33 +15,59 @@ import microplotter.view.PortConfigPanel;
 import microplotter.view.TerminalPanel;
 
 /**
- * Controller for all serial port related actions.
- * Manages port searching, connection, data sending, and receiving.
- * Implements logic from Layout.java and Control.java.
+ * @brief Controller for all serial port related actions.
+ * @details This class manages all user interactions related to serial communication.
+ * It handles port searching, connecting/disconnecting, and sending data from the terminal.
+ * It also implements the SerialPortDataListener to receive incoming data asynchronously,
+ * process it, and forward it to other parts of the application like the terminal and the plot controller.
+ * Its logic is derived from the original Layout.java and Control.java classes.
  */
 public class SerialController implements SerialPortDataListener {
 
+    /** @brief The main application window, used to access UI panels. */
 	private final MainWindow mainWindow;
+    /** @brief The model responsible for managing the serial port connection. */
     private final SerialPortManager serialManager;
+    /** @brief The model holding the application's configuration and state. */
     private final ConfigurationModel configModel;
+    /** @brief The utility class for handling file recording. */
     private final FileManager fileManager;
-    private final PlotController plotController; // Reference to PlotController
+    /** @brief The controller responsible for plotting logic. */
+    private final PlotController plotController;
+    /** @brief The specific UI panel for port configuration. */
     private final PortConfigPanel portConfigPanel;
+    /** @brief The specific UI panel for the terminal. */
     private final TerminalPanel terminalPanel;
 
+    /** @brief A buffer to accumulate incoming serial data until a newline is received. */
     private String receivedDataBuffer = "";
 
+    /**
+     * @brief Constructs the SerialController.
+     * @details Initializes the controller and injects all its dependencies. It retrieves specific
+     * view panels from the main window and then calls initListeners() to attach event handlers.
+     * @param mainWindow The main application window.
+     * @param serialManager The serial port management model.
+     * @param configModel The application configuration model.
+     * @param fileManager The file management utility.
+     * @param plotController The plot controller, for forwarding data.
+     */
     public SerialController(MainWindow mainWindow, SerialPortManager serialManager, ConfigurationModel configModel, FileManager fileManager, PlotController plotController) {
         this.mainWindow = mainWindow;
         this.serialManager = serialManager;
         this.configModel = configModel;
         this.fileManager = fileManager;
-        this.plotController = plotController; // Store the reference
+        this.plotController = plotController;
         this.portConfigPanel = mainWindow.getPortConfigPanel();
         this.terminalPanel = mainWindow.getTerminalPanel();
         initListeners();
     }
 
+    /**
+     * @brief Attaches action listeners to all relevant UI components.
+     * @details This method centralizes the wiring of UI events (button clicks, etc.)
+     * to their corresponding handler methods in this controller.
+     */
     private void initListeners() {
         // Add listeners for components in PortConfigPanel
         portConfigPanel.getSearchButton().addActionListener(e -> searchPorts());
@@ -54,27 +80,27 @@ public class SerialController implements SerialPortDataListener {
     }
 
     /**
-     * Searches for available serial ports and updates the combo box.
-     * Logic from Layout.search_port. 
+     * @brief Searches for available serial ports and updates the UI combo box.
+     * @details Logic is derived from the original Layout.search_port method.
      */
     private void searchPorts() {
-        portConfigPanel.getPortComboBox().removeAllItems(); // 
-        java.util.List<String> portNames = serialManager.getAvailablePorts(); // 
+        portConfigPanel.getPortComboBox().removeAllItems();
+        java.util.List<String> portNames = serialManager.getAvailablePorts();
         for (String portName : portNames) {
             portConfigPanel.getPortComboBox().addItem(portName);
         }
 
         if (!"No port found".equals(portConfigPanel.getPortComboBox().getItemAt(0))) {
-            portConfigPanel.getConnectButton().setEnabled(true); // 
-            portConfigPanel.getSearchButton().setText("Update port list"); // 
+            portConfigPanel.getConnectButton().setEnabled(true);
+            portConfigPanel.getSearchButton().setText("Update port list");
         } else {
-            portConfigPanel.getConnectButton().setEnabled(false); // 
+            portConfigPanel.getConnectButton().setEnabled(false);
         }
     }
 
     /**
-     * Toggles the serial port connection state.
-     * Logic from Layout.connect_port. 
+     * @brief Toggles the serial port connection state by calling connect() or disconnect().
+     * @details Logic is derived from the original Layout.connect_port method.
      */
     private void toggleConnection() {
         if (configModel.isConnected()) {
@@ -84,19 +110,25 @@ public class SerialController implements SerialPortDataListener {
         }
     }
 
+    /**
+     * @brief Connects to the selected serial port with the chosen baud rate.
+     */
     private void connect() {
         String selectedPort = (String) portConfigPanel.getPortComboBox().getSelectedItem();
         int baudRate = Integer.parseInt((String) portConfigPanel.getBaudRateComboBox().getSelectedItem());
 
-        if (serialManager.connect(selectedPort, baudRate)) { // 
+        if (serialManager.connect(selectedPort, baudRate)) {
             configModel.setConnected(true);
-            serialManager.addDataListener(this); // 
+            serialManager.addDataListener(this);
             updateUIForConnectionState();
         }
     }
 
+    /**
+     * @brief Disconnects from the current serial port.
+     */
     private void disconnect() {
-        serialManager.disconnect(); // 
+        serialManager.disconnect();
         configModel.setConnected(false);
         if(fileManager.isRecording()){
             fileManager.stopRecording();
@@ -105,108 +137,130 @@ public class SerialController implements SerialPortDataListener {
     }
     
     /**
-     * Sends a message from the terminal text field over the serial port.
-     * Logic from Control.send_message. 
+     * @brief Sends a message from the terminal text field over the serial port.
+     * @details Appends CR and/or NL characters based on checkbox selections. Logic is
+     * derived from the original Control.send_message method.
      */
     private void sendMessage() {
         if (!configModel.isConnected()) return;
 
-        String message = terminalPanel.getMessageTextField().getText(); // 
+        String message = terminalPanel.getMessageTextField().getText();
         if (terminalPanel.getAddCRCheckBox().isSelected()) {
-            message += "\r"; // 
+            message += "\r";
         }
         if (terminalPanel.getAddNLCheckBox().isSelected()) {
-            message += "\n"; // 
+            message += "\n";
         }
 
-        serialManager.writeData(message); // 
-        terminalPanel.getMessageTextField().setText(""); // 
+        serialManager.writeData(message);
+        terminalPanel.getMessageTextField().setText("");
     }
     
+    /**
+     * @brief Toggles the data recording state.
+     * @details Starts or stops recording data to a text file using the FileManager.
+     */
     private void toggleRecording() {
         if (fileManager.isRecording()) {
             fileManager.stopRecording();
-            terminalPanel.getRecordButton().setText("Begin rec"); // 
-            terminalPanel.getRecordButton().setBackground(Color.gray); // 
+            terminalPanel.getRecordButton().setText("Begin rec");
+            terminalPanel.getRecordButton().setBackground(Color.gray);
         } else {
             if (fileManager.startRecording(mainWindow)) {
-                terminalPanel.getRecordButton().setText("Stop rec"); // 
-                terminalPanel.getRecordButton().setBackground(Color.red); // 
+                terminalPanel.getRecordButton().setText("Stop rec");
+                terminalPanel.getRecordButton().setBackground(Color.red);
             }
         }
     }
 
     /**
-     * Updates the enabled/disabled state of UI elements based on connection status.
-     * Logic from Layout.connect_port and Control.plotting_form_actions.
+     * @brief Updates the enabled/disabled state of UI elements based on connection status.
+     * @details This centralizes all UI state changes that depend on whether the application
+     * is connected to a serial port.
      */
     private void updateUIForConnectionState() {
         boolean connected = configModel.isConnected();
         
-        // Panels that depend on connection state
         PlotConfigPanel plotConfigPanel = mainWindow.getPlotConfigPanel();
 
         // Update button text and color
-        portConfigPanel.getConnectButton().setText(connected ? "Disconnect" : "Connect"); // 
-        portConfigPanel.getConnectButton().setBackground(connected ? Color.RED : Color.gray); // 
+        portConfigPanel.getConnectButton().setText(connected ? "Disconnect" : "Connect");
+        portConfigPanel.getConnectButton().setBackground(connected ? Color.RED : Color.gray);
 
         // Enable/disable components
-        portConfigPanel.getSearchButton().setEnabled(!connected); // 
-        portConfigPanel.getPortComboBox().setEnabled(!connected); // 
-        portConfigPanel.getBaudRateComboBox().setEnabled(!connected); // 
+        portConfigPanel.getSearchButton().setEnabled(!connected);
+        portConfigPanel.getPortComboBox().setEnabled(!connected);
+        portConfigPanel.getBaudRateComboBox().setEnabled(!connected);
 
-        terminalPanel.getSendButton().setEnabled(connected); // 
-        terminalPanel.getAddCRCheckBox().setEnabled(connected); // 
-        terminalPanel.getAddNLCheckBox().setEnabled(connected); // 
-        terminalPanel.getRecordButton().setEnabled(connected); // 
+        terminalPanel.getSendButton().setEnabled(connected);
+        terminalPanel.getAddCRCheckBox().setEnabled(connected);
+        terminalPanel.getAddNLCheckBox().setEnabled(connected);
+        terminalPanel.getRecordButton().setEnabled(connected);
         
-        plotConfigPanel.getPlotButton().setEnabled(connected); // 
+        plotConfigPanel.getPlotButton().setEnabled(connected);
 
         // If disconnected, reset the record button state
         if (!connected) {
-            terminalPanel.getRecordButton().setText("Begin rec"); // 
-            terminalPanel.getRecordButton().setBackground(Color.gray); // 
+            terminalPanel.getRecordButton().setText("Begin rec");
+            terminalPanel.getRecordButton().setBackground(Color.gray);
         }
     }
 
-
+    /**
+     * @override
+     * @brief Specifies which serial port events this listener is interested in.
+     * @return The event mask for data availability.
+     */
     @Override
     public int getListeningEvents() {
-        return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; // 
+        return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
     }
 
+    /**
+     * @override
+     * @brief The callback method invoked by jSerialComm when a serial event occurs.
+     * @details Reads all available data from the input stream, adds it to a buffer,
+     * and processes the buffer line by line, passing each complete line to processReceivedLine.
+     * @param event The serial port event that occurred.
+     */
     @Override
     public void serialEvent(SerialPortEvent event) {
         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
-            return; // 
+            return;
         }
 
         try {
-            InputStream in = serialManager.getCurrentPort().getInputStream(); // 
-            byte[] readBuffer = new byte[in.available()]; // 
-            in.read(readBuffer); // 
-            String chunk = new String(readBuffer); // 
+            InputStream in = serialManager.getCurrentPort().getInputStream();
+            byte[] readBuffer = new byte[in.available()];
+            in.read(readBuffer);
+            String chunk = new String(readBuffer);
             receivedDataBuffer += chunk;
 
             // Process data line by line
             if (receivedDataBuffer.contains("\n")) {
                 String[] lines = receivedDataBuffer.split("\n", -1);
                 for (int i = 0; i < lines.length - 1; i++) {
-                    String line = lines[i].replace("\r", ""); // 
-                    if (!line.isEmpty()) { // 
+                    String line = lines[i].replace("\r", "");
+                    if (!line.isEmpty()) {
                         processReceivedLine(line);
                     }
                 }
                 receivedDataBuffer = lines[lines.length - 1]; // Keep the last partial line
             }
         } catch (Exception e) {
-            System.err.println("Serial event error: " + e.getMessage()); // 
+            System.err.println("Serial event error: " + e.getMessage());
         }
     }
 
+    /**
+     * @brief Processes a single, complete line of data received from the serial port.
+     * @details This method ensures that all UI updates happen on the Event Dispatch Thread (EDT).
+     * It forwards the data line to the terminal for display, to the file manager for recording,
+     * and to the plot controller for plotting.
+     * @param line The complete data string, without newline characters.
+     */
     private void processReceivedLine(final String line) {
-        // UI updates must run on the Event Dispatch Thread (EDT)
-        SwingUtilities.invokeLater(() -> { // 
+        SwingUtilities.invokeLater(() -> {
             terminalPanel.appendText(line);
             if (fileManager.isRecording()) {
                 fileManager.writeData(line);

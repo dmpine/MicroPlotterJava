@@ -15,15 +15,27 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeriesCollection;
 
 /**
- * Panel that contains the JFreeChart plot.
- * Logic is adapted from Layout.create_plt_elements and Control.create_multiple_plot.
+ * @brief A JPanel that encapsulates and manages a JFreeChart ChartPanel.
+ * @details This class is responsible for displaying the data plot. It contains methods
+ * to update the plot with new data and to configure its visual appearance, such as
+ * line thickness and axis types. Its logic is adapted from the original Layout and Control classes.
  */
 public class PlotPanel extends JPanel {
 
+    /** @brief The JFreeChart panel that hosts the chart itself. */
     private final ChartPanel chartPanel;
+    /** @brief The main JFreeChart object that controls the plot's properties. */
     private final JFreeChart chart;
+    /** @brief The renderer used to customize the appearance of the plot lines. */
     private final XYLineAndShapeRenderer renderer;
 
+    /**
+     * @brief Constructs the PlotPanel.
+     * @details Sets up the panel layout and initializes an empty JFreeChart instance,
+     * preparing it for future data.
+     * @param width The initial width of the panel.
+     * @param height The initial height of the panel.
+     */
     public PlotPanel(int width, int height) {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Plot"));
@@ -42,7 +54,10 @@ public class PlotPanel extends JPanel {
     }
 
     /**
-     * Updates the chart with a new dataset and applies appearance settings.
+     * @brief Updates the chart with a new dataset and applies appearance settings.
+     * @details This is the main rendering method. It takes a dataset and configuration options,
+     * then re-configures and repaints the chart to reflect the new state. It handles
+     * setting line thickness, axis types (logarithmic or decimal), and axis ranges.
      * @param dataset The collection of series to display.
      * @param lineWidth The thickness of the plot lines.
      * @param xAxisType The type of X-axis ("Dec" or "Log").
@@ -60,32 +75,39 @@ public class PlotPanel extends JPanel {
             renderer.setSeriesStroke(i, new BasicStroke(lineWidth));
         }
 
+        // --- FIX: Configure LogarithmicAxis correctly ---
         if ("Log".equals(xAxisType)) {
-            plot.setDomainAxis(new LogarithmicAxis("X (Log)"));
+            LogarithmicAxis logDomainAxis = new LogarithmicAxis("X (Log)");
+            logDomainAxis.setAllowNegativesFlag(true); // This prevents the crash for x=0
+            plot.setDomainAxis(logDomainAxis);
         } else {
             plot.setDomainAxis(new NumberAxis("X (Dec)"));
         }
 
+        // --- FIX: Configure LogarithmicAxis correctly ---
         if ("Log".equals(yAxisType)) {
-            plot.setRangeAxis(new LogarithmicAxis("Y (Log)"));
+            LogarithmicAxis logRangeAxis = new LogarithmicAxis("Y (Log)");
+            logRangeAxis.setAllowNegativesFlag(true); // This prevents the crash for y<=0
+            plot.setRangeAxis(logRangeAxis);
         } else {
             plot.setRangeAxis(new NumberAxis("Y (Dec)"));
         }
         
-        // --- KEY CHANGE: Manually set the X-axis range for the "sliding window" effect ---
         if (dataset.getSeriesCount() > 0 && dataset.getSeries(0).getItemCount() > 0) {
-            // Get the min and max X from the first series in the dataset
             double minX = dataset.getSeries(0).getMinX();
             double maxX = dataset.getSeries(0).getMaxX();
-            plot.getDomainAxis().setRange(minX, maxX); // Set the exact range
+            plot.getDomainAxis().setRange(minX, maxX);
         } else {
-            plot.getDomainAxis().setAutoRange(true); // Fallback for empty plot
+            plot.getDomainAxis().setAutoRange(true);
         }
 
-        // The Y-axis can still auto-range to fit the visible data
         plot.getRangeAxis().setAutoRange(true);
     }
      
+    /**
+     * @brief Clears all data from the plot and disables it.
+     * @details Resets the chart to its initial empty state.
+     */
     public void clearPlot() {
         chart.getXYPlot().setDataset(null);
         chartPanel.setEnabled(false);

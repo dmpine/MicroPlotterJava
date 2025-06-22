@@ -3,102 +3,190 @@ package microplotter.model;
 import microplotter.utils.Constants;
 
 /**
- * Holds the application's configuration and state.
- * This data was previously held as instance variables in the Layout class.
+ * @brief Holds the application's configuration and run-time state.
+ * @details This class acts as a central repository for all user-configurable settings
+ * and application state flags, such as connection status and plotting state. This data
+ * was previously held as instance variables in the old Layout class. 
  */
 public class ConfigurationModel {
 
-    // Serial Port State
+    // --- Serial Port State ---
+    /** @brief Flag indicating if the application is currently connected to a serial port. */
     private boolean isConnected = false;
 
-    // Plotting State
+    // --- Plotting State ---
+    /** @brief Flag indicating if the plotting feature is currently active. */
     private boolean isPlotting = false;
-    private boolean isPaused = false; 
-    private String plotPresentation = "Static"; 
-    private int dynamicSampleLimit = 50; 
-    private double updateTime = 3.0; 
-    private int lineWidth = 2; 
-    private String xAxisType = "Dec"; 
-    private String yAxisType = "Dec"; 
+    /** @brief Flag indicating if the active plot is paused. */
+    private boolean isPaused = false;
+    /** @brief The current plot presentation mode ("Static" or "Dynamic").  */
+    private String plotPresentation = "Static";
+    /** @brief The number of samples to display in "Dynamic" plot mode.  */
+    private int dynamicSampleLimit = 50;
+    /** @brief The time interval in seconds for plot updates.  */
+    private double updateTime = 3.0;
+    /** @brief The width of the lines drawn on the plot.  */
+    private int lineWidth = 2;
+    /** @brief The type of the X-axis ("Dec" or "Log").  */
+    private String xAxisType = "Dec";
+    /** @brief The type of the Y-axis ("Dec" or "Log").  */
+    private String yAxisType = "Dec";
 
-    // Terminal and Recording State
+    // --- Terminal and Recording State ---
+    /** @brief Flag indicating if incoming data is being recorded to a file. */
     private boolean isFileRecording = false;
-    private String recordingFileName = "";  
-    private boolean addCR = false; 
-    private boolean addNL = false; 
-    private boolean showTimestamp = true; 
+    /** @brief The absolute path of the file being recorded to.  */
+    private String recordingFileName = "";
+    /** @brief Flag to add a carriage return ('\r') to sent messages.  */
+    private boolean addCR = false;
+    /** @brief Flag to add a newline ('\n') to sent messages.  */
+    private boolean addNL = false;
+    /** @brief Flag to show timestamps in the terminal output.  */
+    private boolean showTimestamp = true;
+    /** @brief Flag to enable auto-scrolling in the terminal.  */
     private boolean autoScroll = true;
 
-    // --- Getters and Setters ---
 
+    /**
+     * @brief Checks if the serial port is connected.
+     * @return True if connected, false otherwise.
+     */
     public boolean isConnected() {
         return isConnected;
     }
 
+    /**
+     * @brief Sets the connection state of the serial port.
+     * @param connected The new connection state.
+     */
     public void setConnected(boolean connected) {
-        isConnected = connected;
+        this.isConnected = connected;
     }
 
+    /**
+     * @brief Checks if plotting is active.
+     * @return True if plotting is active, false otherwise.
+     */
     public boolean isPlotting() {
         return isPlotting;
     }
 
+    /**
+     * @brief Sets the plotting state.
+     * @param plotting The new plotting state.
+     */
     public void setPlotting(boolean plotting) {
-        isPlotting = plotting;
+        this.isPlotting = plotting;
     }
 
+    /**
+     * @brief Checks if plotting is paused.
+     * @return True if plotting is paused, false otherwise.
+     */
     public boolean isPaused() {
         return isPaused;
     }
 
+    /**
+     * @brief Sets the paused state of the plot.
+     * @param paused The new paused state.
+     */
     public void setPaused(boolean paused) {
-        isPaused = paused;
+        this.isPaused = paused;
     }
     
+    /**
+     * @brief Gets the current plot presentation mode.
+     * @return A string, either "Static" or "Dynamic".
+     */
     public String getPlotPresentation() {
         return plotPresentation;
     }
 
+    /**
+     * @brief Sets the plot presentation mode.
+     * @param plotPresentation The new presentation mode.
+     */
     public void setPlotPresentation(String plotPresentation) {
         this.plotPresentation = plotPresentation;
     }
 
+    /**
+     * @brief Gets the sample limit for dynamic plotting.
+     * @return The number of samples to display.
+     */
     public int getDynamicSampleLimit() {
         return dynamicSampleLimit;
     }
 
+    /**
+     * @brief Sets the sample limit for dynamic plotting.
+     * @param dynamicSampleLimit The new sample limit.
+     */
     public void setDynamicSampleLimit(int dynamicSampleLimit) {
         this.dynamicSampleLimit = dynamicSampleLimit;
     }
 
+    /**
+     * @brief Gets the plot update time.
+     * @return The update time in seconds.
+     */
     public double getUpdateTime() {
         return updateTime;
     }
 
+    /**
+     * @brief Sets the plot update time.
+     * @param updateTime The new update time in seconds.
+     */
     public void setUpdateTime(double updateTime) {
         this.updateTime = updateTime;
     }
 
+    /**
+     * @brief Gets the plot line width.
+     * @return The line width in pixels.
+     */
     public int getLineWidth() {
         return lineWidth;
     }
 
+    /**
+     * @brief Sets the plot line width.
+     * @param lineWidth The new line width in pixels.
+     */
     public void setLineWidth(int lineWidth) {
         this.lineWidth = lineWidth;
     }
     
+    /**
+     * @brief Gets the X-axis type.
+     * @return A string, either "Dec" or "Log".
+     */
     public String getXAxisType() {
         return xAxisType;
     }
 
+    /**
+     * @brief Sets the X-axis type.
+     * @param xAxisType The new X-axis type.
+     */
     public void setXAxisType(String xAxisType) {
         this.xAxisType = xAxisType;
     }
 
+    /**
+     * @brief Gets the Y-axis type.
+     * @return A string, either "Dec" or "Log".
+     */
     public String getYAxisType() {
         return yAxisType;
     }
 
+    /**
+     * @brief Sets the Y-axis type.
+     * @param yAxisType The new Y-axis type.
+     */
     public void setYAxisType(String yAxisType) {
         this.yAxisType = yAxisType;
     }

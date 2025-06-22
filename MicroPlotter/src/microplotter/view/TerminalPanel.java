@@ -15,21 +15,40 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
- * Panel for terminal output and input.
- * This code is extracted from Layout.create_term_elements.
+ * @brief A JPanel that provides the user interface for the serial terminal.
+ * @details This class encapsulates all UI components related to the terminal, including
+ * the output text area, the input field for sending messages, and various
+ * configuration checkboxes. Its code is extracted from the original
+ * Layout.create_term_elements method.
  */
 public class TerminalPanel extends JPanel {
 
+    /** @brief The text field for user input to be sent over serial. */
     private JTextField messageTextField;
+    /** @brief The button to send the message from the text field. */
     private JButton sendButton;
+    /** @brief Checkbox to automatically add a carriage return ('\r') to sent messages. */
     private JCheckBox addCRCheckBox;
+    /** @brief Checkbox to automatically add a newline ('\n') to sent messages. */
     private JCheckBox addNLCheckBox;
+    /** @brief Checkbox to toggle the display of timestamps for received data. */
     private JCheckBox timestampCheckBox;
+    /** @brief Checkbox to toggle automatic scrolling to the bottom of the terminal. */
     private JCheckBox autoScrollCheckBox;
+    /** @brief The button to start or stop recording terminal data to a file. */
     private JButton recordButton;
+    /** @brief The text area where received serial data is displayed. */
     private JTextArea terminalTextArea;
+    /** @brief The formatter for generating timestamps. */
     private final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
+    /**
+     * @brief Constructs the TerminalPanel.
+     * @details Sets up the panel layout and creates and arranges all the UI controls
+     * for the terminal interface.
+     * @param width The initial width of the panel.
+     * @param height The initial height of the panel.
+     */
     public TerminalPanel(int width, int height) {
         setBorder(BorderFactory.createTitledBorder("Terminal"));
         setPreferredSize(new Dimension(width - 2, height));
@@ -55,10 +74,10 @@ public class TerminalPanel extends JPanel {
         addNLCheckBox.setEnabled(false);
         topControls.add(addNLCheckBox);
 
-        timestampCheckBox = new JCheckBox("TimeStamp", true); // 
+        timestampCheckBox = new JCheckBox("TimeStamp", true);
         topControls.add(timestampCheckBox);
 
-        autoScrollCheckBox = new JCheckBox("AutoScroll", true); // 
+        autoScrollCheckBox = new JCheckBox("AutoScroll", true);
         topControls.add(autoScrollCheckBox);
 
         recordButton = new JButton("Begin rec");
@@ -75,22 +94,47 @@ public class TerminalPanel extends JPanel {
         add(subPanel);
     }
     
+    /**
+     * @brief Appends a line of text to the terminal display area.
+     * @details Optionally prepends a formatted timestamp and handles auto-scrolling
+     * to the latest entry based on the corresponding checkbox states.
+     * @param data The string data to append to the terminal.
+     */
     public void appendText(String data) {
         String textToAppend = data;
         if (timestampCheckBox.isSelected()) {
-            textToAppend = formatter.format(new Date()) + "\t" + data; // 
+            textToAppend = formatter.format(new Date()) + "\t" + data;
         }
         terminalTextArea.append(textToAppend + "\n");
         
         if (autoScrollCheckBox.isSelected()) {
-            terminalTextArea.setCaretPosition(terminalTextArea.getDocument().getLength()); // 
+            terminalTextArea.setCaretPosition(terminalTextArea.getDocument().getLength());
         }
     }
 
-    // --- Add Getters for components ---
+    /**
+     * @brief Gets the text field for sending messages.
+     * @return The instance of the message JTextField.
+     */
     public JTextField getMessageTextField() { return messageTextField; }
+    /**
+     * @brief Gets the "Send" button.
+     * @return The instance of the send JButton.
+     */
     public JButton getSendButton() { return sendButton; }
+    /**
+     * @brief Gets the "Add CR" checkbox.
+     * @return The instance of the Add CR JCheckBox.
+     */
     public JCheckBox getAddCRCheckBox() { return addCRCheckBox; }
+    /**
+     * @brief Gets the "Add NL" checkbox.
+     * @return The instance of the Add NL JCheckBox.
+     */
     public JCheckBox getAddNLCheckBox() { return addNLCheckBox; }
+    /**
+     * @brief Gets the record button.
+     * @return The instance of the record JButton.
+     */
     public JButton getRecordButton() { return recordButton; }
 }

@@ -13,38 +13,59 @@ import microplotter.view.PlotConfigPanel;
 import microplotter.view.PlotPanel;
 
 /**
- * Controller for all plotting actions. Manages plot configuration and data updates.
- * Implements logic from Layout.java, Control.java, and the Timer concept.
+ * @brief Controller for all plotting actions.
+ * @details Manages the logic for starting, stopping, and pausing the plot, as well as handling
+ * plot configuration changes from the UI. It uses a Timer to update the plot at fixed
+ * intervals, processing buffered data to respect the user-defined update time.
+ * Implements logic from the original Layout.java and Control.java classes.
  */
 public class PlotController {
 
+    /** @brief The main application window, used to access UI panels. */
     private final MainWindow mainWindow;
+    /** @brief The model holding the plot data series. */
     private final PlotDataModel plotDataModel;
+    /** @brief The model holding the application's configuration and state. */
     private final ConfigurationModel configModel;
+    /** @brief The specific UI panel for plot configuration. */
     private final PlotConfigPanel plotConfigPanel;
+    /** @brief The specific UI panel where the chart is rendered. */
     private final PlotPanel plotPanel;
+    /** @brief The Swing Timer that triggers periodic plot updates. */
     private final Timer plotUpdateTimer;
-    
-    // --- KEY CHANGE: Buffer to hold incoming data between updates ---
+    /** @brief A thread-safe buffer to hold incoming data strings between plot updates. */
     private final List<String> dataBuffer;
 
+    /**
+     * @brief Constructs the PlotController.
+     * @details Initializes the controller, injects its model and view dependencies,
+     * sets up the data buffer, and configures the plot update timer.
+     * @param mainWindow The main application window.
+     * @param plotDataModel The data model for the plot.
+     * @param configModel The application's configuration model.
+     */
     public PlotController(MainWindow mainWindow, PlotDataModel plotDataModel, ConfigurationModel configModel) {
         this.mainWindow = mainWindow;
         this.plotDataModel = plotDataModel;
         this.configModel = configModel;
         this.plotConfigPanel = mainWindow.getPlotConfigPanel();
         this.plotPanel = mainWindow.getPlotPanel();
-        
+
         // Use a thread-safe list for the buffer
         this.dataBuffer = Collections.synchronizedList(new ArrayList<>());
 
         // Setup a Swing Timer to update the plot periodically
-        this.plotUpdateTimer = new Timer(1000, e -> updatePlot()); // Default 1s, will be updated
+        this.plotUpdateTimer = new Timer(1000, e -> updatePlot());
         this.plotUpdateTimer.setInitialDelay(0);
 
         initListeners();
     }
 
+    /**
+     * @brief Attaches action listeners to the plot configuration UI components.
+     * @details Wires up the "Start/Stop", "Pause", and presentation mode combo box
+     * to their respective handler methods.
+     */
     private void initListeners() {
         plotConfigPanel.getPlotButton().addActionListener(e -> togglePlotting());
         plotConfigPanel.getPauseButton().addActionListener(e -> togglePause());
@@ -56,12 +77,17 @@ public class PlotController {
         });
     }
 
+    /**
+     * @brief Starts or stops the plotting process.
+     * @details Toggles the plotting state, clears data models and buffers,
+     * starts/stops the timer, and updates the UI component states accordingly.
+     */
     private void togglePlotting() {
         if (configModel.isPlotting()) {
             // --- STOP PLOTTING ---
             configModel.setPlotting(false);
             plotUpdateTimer.stop();
-            dataBuffer.clear(); // Clear buffer on stop
+            dataBuffer.clear();
             plotConfigPanel.getPlotButton().setText("Start plotting");
             plotConfigPanel.getPlotButton().setBackground(Color.gray);
             plotConfigPanel.getPauseButton().setEnabled(false);
@@ -72,12 +98,12 @@ public class PlotController {
             configModel.setPlotting(true);
             plotDataModel.clearData();
             plotPanel.clearPlot();
-            dataBuffer.clear(); // Clear buffer on start
-            
-            updateConfigFromUI(); // Capture current settings
+            dataBuffer.clear();
+
+            updateConfigFromUI();
             plotUpdateTimer.setDelay((int) (configModel.getUpdateTime() * 1000));
             plotUpdateTimer.start();
-            
+
             plotConfigPanel.getPlotButton().setText("Stop plotting");
             plotConfigPanel.getPlotButton().setBackground(Color.red);
             plotConfigPanel.getPauseButton().setEnabled(true);
@@ -85,6 +111,10 @@ public class PlotController {
         }
     }
 
+    /**
+     * @brief Pauses or resumes the plot updates.
+     * @details Toggles the paused state and correspondingly starts or stops the plot update timer.
+     */
     private void togglePause() {
         if (configModel.isPaused()) {
             configModel.setPaused(false);
@@ -98,25 +128,29 @@ public class PlotController {
     }
 
     /**
-     * Called by SerialController. Now only adds data to a buffer.
+     * @brief Buffers a line of data received from the SerialController.
+     * @details This method is called by the SerialController for each line of data. It simply
+     * adds the data to a temporary buffer to await processing by the timer.
      * @param dataLine A line of text received from the serial port.
      */
     public void processData(String dataLine) {
         if (!configModel.isPlotting() || configModel.isPaused()) {
             return;
         }
-        // --- KEY CHANGE: Just add data to the buffer, don't process it yet ---
         dataBuffer.add(dataLine);
     }
-    
+
     /**
-     * This method is called by the timer to refresh the chart display.
+     * @brief Processes buffered data and redraws the chart.
+     * @details This method is called by the plot update timer. It processes all data
+     * accumulated in the buffer, updates the plot data model, applies dynamic limits,
+     * and finally calls the PlotPanel's update method to render the changes.
      */
     private void updatePlot() {
-        // --- KEY CHANGE: Process all buffered data at once ---
+        // Process all buffered data at once
         synchronized (dataBuffer) {
             if (dataBuffer.isEmpty()) {
-                return; // Nothing to do
+                return;
             }
             for (String line : dataBuffer) {
                 DataProcessor.ParsedData parsedData = DataProcessor.parseSerialData(line);
@@ -127,15 +161,15 @@ public class PlotController {
                     plotDataModel.incrementXCounter();
                 }
             }
-            dataBuffer.clear(); // Clear the buffer after processing
+            dataBuffer.clear();
         }
 
-        updateConfigFromUI(); // Get latest settings before redrawing
+        updateConfigFromUI();
 
         if ("Dynamic".equals(configModel.getPlotPresentation())) {
             plotDataModel.limitSeriesSize(configModel.getDynamicSampleLimit());
         }
-        
+
         int activeSeriesCount = plotDataModel.getActiveSeriesCount();
         plotPanel.updatePlot(
             plotDataModel.getDataset(activeSeriesCount),
@@ -144,27 +178,35 @@ public class PlotController {
             configModel.getYAxisType()
         );
     }
-    
-    /** Reads all settings from the UI and stores them in the ConfigurationModel. */
+
+    /**
+     * @brief Reads all settings from the UI and stores them in the ConfigurationModel.
+     * @details This ensures the plotting logic uses the most up-to-date configuration
+     * values selected by the user.
+     */
     private void updateConfigFromUI() {
         configModel.setPlotPresentation((String) plotConfigPanel.getPlotPresentationComboBox().getSelectedItem());
         configModel.setDynamicSampleLimit((Integer) plotConfigPanel.getDynamicSampleLimitComboBox().getSelectedItem());
         configModel.setLineWidth((Integer) plotConfigPanel.getLineWidthComboBox().getSelectedItem());
         configModel.setXAxisType((String) plotConfigPanel.getXAxisTypeComboBox().getSelectedItem());
         configModel.setYAxisType((String) plotConfigPanel.getYAxisTypeComboBox().getSelectedItem());
-        
+
         String timeStr = (String) plotConfigPanel.getUpdateTimeComboBox().getSelectedItem();
         configModel.setUpdateTime(Double.parseDouble(timeStr.replace("s", "")));
     }
-    
-    /** Enables or disables the plot configuration controls. */
+
+    /**
+     * @brief Enables or disables the plot configuration controls on the UI.
+     * @details This is used to prevent the user from changing plot settings while plotting is active.
+     * @param enabled True to enable the controls, false to disable them.
+     */
     private void setPlotConfigEnabled(boolean enabled) {
         plotConfigPanel.getLineWidthComboBox().setEnabled(enabled);
         plotConfigPanel.getPlotPresentationComboBox().setEnabled(enabled);
         plotConfigPanel.getUpdateTimeComboBox().setEnabled(enabled);
         plotConfigPanel.getXAxisTypeComboBox().setEnabled(enabled);
         plotConfigPanel.getYAxisTypeComboBox().setEnabled(enabled);
-        
+
         if (enabled && "Dynamic".equals(plotConfigPanel.getPlotPresentationComboBox().getSelectedItem())) {
              plotConfigPanel.getDynamicSampleLimitComboBox().setEnabled(true);
         } else {

@@ -11,30 +11,42 @@ import microplotter.utils.Constants;
 import microplotter.utils.ResourceLoader;
 
 /**
- * The main application window (JFrame).
- * It contains and arranges all the sub-panels.
- * Replaces the JFrame setup from the Layout class constructor.
+ * @brief The main application window (JFrame).
+ * @details This class extends JFrame and serves as the primary container for the entire
+ * user interface. It contains and arranges all the specialized sub-panels
+ * (PortConfigPanel, PlotConfigPanel, etc.). Its creation logic replaces the
+ * JFrame setup from the original Layout class constructor.
  */
 public class MainWindow extends JFrame {
 
+    /** @brief The panel for serial port configuration UI components. */
     private PortConfigPanel portConfigPanel;
+    /** @brief The panel for plot configuration UI components. */
     private PlotConfigPanel plotConfigPanel;
+    /** @brief The panel that contains the JFreeChart plot. */
     private PlotPanel plotPanel;
+    /** @brief The panel for the terminal output and message sending. */
     private TerminalPanel terminalPanel;
 
+    /**
+     * @brief Constructs the main application window.
+     * @details Sets up the JFrame properties such as title, size, and icon. It then
+     * creates a main content panel and instantiates and adds all the specialized
+     * sub-panels in the correct vertical order.
+     */
     public MainWindow() {
         setTitle(Constants.APP_TITLE);
-        setSize(Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT); // 
+        setSize(Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
-        // Set the application icon 
+        // Set the application icon
         Image icon = ResourceLoader.loadImage(Constants.LOGO_ICO);
         if (icon != null) {
             setIconImage(icon);
         }
 
-        // Setup Menu Bar 
+        // Setup Menu Bar
         JMenuBar menuBar = new JMenuBar();
         JMenu windowMenu = new JMenu("Window");
         JMenuItem aboutMenuItem = new JMenuItem("About");
@@ -60,10 +72,25 @@ public class MainWindow extends JFrame {
 
         add(mainPanel);
     }
-    
-    // --- Getters for the panels so controllers can access them ---
+
+    /**
+     * @brief Gets the port configuration panel.
+     * @return The instance of the PortConfigPanel.
+     */
     public PortConfigPanel getPortConfigPanel() { return portConfigPanel; }
+    /**
+     * @brief Gets the plot configuration panel.
+     * @return The instance of the PlotConfigPanel.
+     */
     public PlotConfigPanel getPlotConfigPanel() { return plotConfigPanel; }
+    /**
+     * @brief Gets the plot display panel.
+     * @return The instance of the PlotPanel.
+     */
     public PlotPanel getPlotPanel() { return plotPanel; }
+    /**
+     * @brief Gets the terminal panel.
+     * @return The instance of the TerminalPanel.
+     */
     public TerminalPanel getTerminalPanel() { return terminalPanel; }
 }
