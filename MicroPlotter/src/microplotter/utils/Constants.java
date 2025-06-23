@@ -46,6 +46,10 @@ public class Constants {
     /** @brief The filename for the application's icon in .png format. */
     public static final String LOGO_PNG = "smallLogoMP.png";
     
+    // --- Configuration constants ---
+    /** @brief The filename for the automatic session configuration file. */
+    public static final String SESSION_CONFIG_FILE = ".microplotter_session.properties";
+    
     /** @brief The message content for the 'About' dialog box. */
     public static final String ABOUT_MESSAGE = "<html>"
         + "Hi! My name is Daniel Pineda. I hope MicroPlotter turns out to be useful<br>"

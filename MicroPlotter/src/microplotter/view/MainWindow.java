@@ -30,6 +30,10 @@ public class MainWindow extends JFrame {
     private TerminalPanel terminalPanel;
     /** @brief The about menu. */
     private JMenuItem aboutMenuItem; 
+    /** @brief Menu option save configuration. */
+    private JMenuItem saveConfigMenuItem;
+    /** @brief Menu option load configuration. */
+    private JMenuItem loadConfigMenuItem;
 
     /**
      * @brief Constructs the main application window.
@@ -50,9 +54,18 @@ public class MainWindow extends JFrame {
 
         // Setup Menu Bar
         JMenuBar menuBar = new JMenuBar();
+        
+        JMenu fileMenu = new JMenu("File");
+        saveConfigMenuItem = new JMenuItem("Save Configuration...");
+        loadConfigMenuItem = new JMenuItem("Load Configuration...");
+        fileMenu.add(saveConfigMenuItem);
+        fileMenu.add(loadConfigMenuItem);
+        menuBar.add(fileMenu);
+        
         JMenu windowMenu = new JMenu("Window");
         this.aboutMenuItem = new JMenuItem("About");
         windowMenu.add(this.aboutMenuItem);
+        
         menuBar.add(windowMenu);
         setJMenuBar(menuBar);
 
@@ -108,4 +121,9 @@ public class MainWindow extends JFrame {
      * @return The JMenuItem for the 'About' action.
      */
     public JMenuItem getAboutMenuItem() { return aboutMenuItem; }
+    
+    /** @brief Gets the 'Save Configuration' menu item. @return The JMenuItem. */
+    public JMenuItem getSaveConfigMenuItem() { return saveConfigMenuItem; }
+    /** @brief Gets the 'Load Configuration' menu item. @return The JMenuItem. */
+    public JMenuItem getLoadConfigMenuItem() { return loadConfigMenuItem; }
 }

@@ -57,6 +57,22 @@ public class PlotController {
 
         initListeners();
     }
+    
+    /**
+     * @brief Synchronizes the view components to match the current state of the ConfigurationModel.
+     * @details This is used after loading a configuration to ensure the UI reflects the loaded settings.
+     */
+    public void syncViewToModel() {
+        plotConfigPanel.getPlotPresentationComboBox().setSelectedItem(configModel.getPlotPresentation());
+        plotConfigPanel.getDynamicSampleLimitComboBox().setSelectedItem(configModel.getDynamicSampleLimit());
+        plotConfigPanel.getLineWidthComboBox().setSelectedItem(configModel.getLineWidth());
+        plotConfigPanel.getXAxisTypeComboBox().setSelectedItem(configModel.getXAxisType());
+        plotConfigPanel.getYAxisTypeComboBox().setSelectedItem(configModel.getYAxisType());
+        plotConfigPanel.getTagsAsNamesCheckBox().setSelected(configModel.useTagsAsNames());
+        
+        String updateTimeStr = String.valueOf(configModel.getUpdateTime()) + "s";
+        plotConfigPanel.getUpdateTimeComboBox().setSelectedItem(updateTimeStr);
+    }
 
     /**
      * @brief Attaches action listeners to the plot configuration UI components.
@@ -186,7 +202,7 @@ public class PlotController {
      * @details This ensures the plotting logic uses the most up-to-date configuration
      * values selected by the user.
      */
-    private void updateConfigFromUI() {
+    public void updateConfigFromUI() {
         configModel.setPlotPresentation((String) plotConfigPanel.getPlotPresentationComboBox().getSelectedItem());
         configModel.setDynamicSampleLimit((Integer) plotConfigPanel.getDynamicSampleLimitComboBox().getSelectedItem());
         configModel.setLineWidth((Integer) plotConfigPanel.getLineWidthComboBox().getSelectedItem());
