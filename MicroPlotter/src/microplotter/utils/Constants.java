@@ -9,9 +9,9 @@ package microplotter.utils;
 public class Constants {
     // --- Application constants ---
     /** @brief The title displayed in the main application window. */
-    public static final String APP_TITLE = "MicroPlotter V2.0 - By DMPT";
+    public static final String APP_TITLE = "MicroPlotter V2.0.0 - By DMPT";
     /** @brief The current version of the application. */
-    public static final String APP_VERSION = "1.0";
+    public static final String APP_VERSION = "2.0.0";
     /** @brief The default width of the main application window in pixels. */
     public static final int DEFAULT_WIDTH = 990;
     /** @brief The default height of the main application window in pixels. */
@@ -45,4 +45,17 @@ public class Constants {
     public static final String LOGO_ICO = "smallLogoMPclean.ico";
     /** @brief The filename for the application's icon in .png format. */
     public static final String LOGO_PNG = "smallLogoMP.png";
+    
+    /** @brief The message content for the 'About' dialog box. */
+    public static final String ABOUT_MESSAGE = "<html>"
+        + "Hi! My name is Daniel Pineda. I hope MicroPlotter turns out to be useful<br>"
+        + "for you. I developed this software as a fun personal exercise.<br><br>"
+        + "Hence, here is a little disclaimer: this software comes with no guarantee,<br>"
+        + "as is usual for most of free opensource applications. You are using this<br>"
+        + "software under your own risk. That is all for the disclaimer. Please, feel<br>"
+        + "free to use this software as you like.<br><br>"
+        + "Contact email: dmpinedat@outlook.com<br>"
+        + "Have a nice day.<br><br>"
+        + "By the way, I also designed the logo, turned out cool didn't it?"
+        + "</html>";
 }

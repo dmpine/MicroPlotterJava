@@ -17,6 +17,7 @@ import microplotter.utils.ResourceLoader;
  * (PortConfigPanel, PlotConfigPanel, etc.). Its creation logic replaces the
  * JFrame setup from the original Layout class constructor.
  */
+@SuppressWarnings("serial")
 public class MainWindow extends JFrame {
 
     /** @brief The panel for serial port configuration UI components. */
@@ -27,6 +28,8 @@ public class MainWindow extends JFrame {
     private PlotPanel plotPanel;
     /** @brief The panel for the terminal output and message sending. */
     private TerminalPanel terminalPanel;
+    /** @brief The about menu. */
+    private JMenuItem aboutMenuItem; 
 
     /**
      * @brief Constructs the main application window.
@@ -49,7 +52,7 @@ public class MainWindow extends JFrame {
         // Setup Menu Bar
         JMenuBar menuBar = new JMenuBar();
         JMenu windowMenu = new JMenu("Window");
-        JMenuItem aboutMenuItem = new JMenuItem("About");
+        this.aboutMenuItem = new JMenuItem("About");
         windowMenu.add(aboutMenuItem);
         menuBar.add(windowMenu);
         setJMenuBar(menuBar);
@@ -93,4 +96,10 @@ public class MainWindow extends JFrame {
      * @return The instance of the TerminalPanel.
      */
     public TerminalPanel getTerminalPanel() { return terminalPanel; }
+    
+    /**
+     * @brief Gets the 'About' menu item from the menu bar.
+     * @return The JMenuItem for the 'About' action.
+     */
+    public JMenuItem getAboutMenuItem() { return aboutMenuItem; }
 }

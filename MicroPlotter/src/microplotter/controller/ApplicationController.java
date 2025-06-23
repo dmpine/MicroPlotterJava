@@ -1,11 +1,12 @@
 package microplotter.controller;
 
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import microplotter.model.ConfigurationModel;
 import microplotter.model.PlotDataModel;
 import microplotter.model.SerialPortManager;
 import microplotter.utils.FileManager;
 import microplotter.view.MainWindow;
-
 /**
  * @brief The main controller that initializes and wires together all components of the application.
  * @details This class acts as the application's entry point after the Main class.
@@ -23,20 +24,34 @@ public class ApplicationController {
      * 4. Makes the main window visible to the user. 
      */
     public ApplicationController() {
-        // 1. Instantiate Models
-        SerialPortManager serialManager = new SerialPortManager(); 
-        ConfigurationModel configModel = new ConfigurationModel(); 
-        PlotDataModel plotDataModel = new PlotDataModel(); 
-        FileManager fileManager = new FileManager(); 
+    	// 1. Instantiate Models
+        SerialPortManager serialManager = new SerialPortManager();
+        ConfigurationModel configModel = new ConfigurationModel();
+        PlotDataModel plotDataModel = new PlotDataModel();
+        FileManager fileManager = new FileManager();
 
         // 2. Instantiate Main View
-        MainWindow mainWindow = new MainWindow(); 
+        MainWindow mainWindow = new MainWindow();
 
-        // 3. Instantiate Controllers
-        PlotController plotController = new PlotController(mainWindow, plotDataModel, configModel); 
-        new SerialController(mainWindow, serialManager, configModel, fileManager, plotController); 
+        // 3. Wire up UI Actions
+        mainWindow.getAboutMenuItem().addActionListener(e -> {
+            // Load the icon using our resource loader
+            ImageIcon icon = microplotter.utils.ResourceLoader.loadIcon(microplotter.utils.Constants.LOGO_PNG);
+            // Show the JOptionPane with the message from our constants file
+            JOptionPane.showMessageDialog(
+                mainWindow,
+                microplotter.utils.Constants.ABOUT_MESSAGE,
+                "About MicroPlotter",
+                JOptionPane.INFORMATION_MESSAGE,
+                icon
+            );
+        });
 
-        // 4. Make the application visible
-        mainWindow.setVisible(true); 
+        // 4. Instantiate Controllers
+        PlotController plotController = new PlotController(mainWindow, plotDataModel, configModel);
+        new SerialController(mainWindow, serialManager, configModel, fileManager, plotController);
+
+        // 5. Make the application visible
+        mainWindow.setVisible(true);
     }
 }
