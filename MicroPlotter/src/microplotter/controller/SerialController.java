@@ -72,6 +72,7 @@ public class SerialController implements SerialPortDataListener {
         // Add listeners for components in PortConfigPanel
         portConfigPanel.getSearchButton().addActionListener(e -> searchPorts());
         portConfigPanel.getConnectButton().addActionListener(e -> toggleConnection());
+        terminalPanel.getClearTerminalButton().addActionListener(e -> terminalPanel.clearTerminal());
 
         // Add listeners for components in TerminalPanel
         terminalPanel.getSendButton().addActionListener(e -> sendMessage());

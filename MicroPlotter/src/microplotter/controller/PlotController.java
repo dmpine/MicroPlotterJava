@@ -66,6 +66,7 @@ public class PlotController {
     private void initListeners() {
         plotConfigPanel.getPlotButton().addActionListener(e -> togglePlotting());
         plotConfigPanel.getPauseButton().addActionListener(e -> togglePause());
+        plotConfigPanel.getClearPlotButton().addActionListener(e -> clearPlotData());
 
         // Listener to enable/disable sample limit combo box
         plotConfigPanel.getPlotPresentationComboBox().addActionListener(e -> {
@@ -217,5 +218,13 @@ public class PlotController {
         } else {
              plotConfigPanel.getDynamicSampleLimitComboBox().setEnabled(false);
         }
+    }
+    
+    /**
+     * @brief Clears all data from the plot and the underlying data model.
+     */
+    private void clearPlotData() {
+        plotDataModel.clearData(); // Clears the data and resets names
+        plotPanel.clearPlot();     // Clears the visual chart
     }
 }

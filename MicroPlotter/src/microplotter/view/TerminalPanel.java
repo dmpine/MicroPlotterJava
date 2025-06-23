@@ -13,6 +13,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 
+
 /**
  * @brief A JPanel that provides the user interface for the serial terminal.
  * @details This class encapsulates all UI components related to the terminal, including
@@ -41,6 +42,8 @@ public class TerminalPanel extends JPanel {
     private JTextArea terminalTextArea;
     /** @brief The formatter for generating timestamps. */
     private final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    /** @brief Button for clearing the terminal. */
+    private JButton clearTerminalButton;
 
     /**
      * @brief Constructs the TerminalPanel.
@@ -89,6 +92,9 @@ public class TerminalPanel extends JPanel {
 	    recordButton = new JButton("Begin rec");
 	    recordButton.setEnabled(false);
 	    optionsPanel.add(recordButton);
+	    
+	    clearTerminalButton = new JButton("Clear");
+	    optionsPanel.add(clearTerminalButton);
 	    
 	    // 3. Combine the top panels into one container
 	    JPanel topSectionPanel = new JPanel(new BorderLayout());
@@ -150,4 +156,10 @@ public class TerminalPanel extends JPanel {
      * @return The instance of the record JButton.
      */
     public JButton getRecordButton() { return recordButton; }
+    
+    /** @brief Gets the clear terminal button. @return The clear JButton instance. */
+    public JButton getClearTerminalButton() { return clearTerminalButton; }
+
+    /** @brief Clears all text from the terminal's text area. */
+    public void clearTerminal() { terminalTextArea.setText(""); }
 }

@@ -26,6 +26,7 @@ public class PlotConfigPanel extends JPanel {
     private JComboBox<String> yAxisTypeComboBox;
     private JButton plotButton;
     private JButton pauseButton;
+    private JButton clearPlotButton;
     /** @brief Checkbox to enable using data tags as plot series names. */
     private JCheckBox tagsAsNamesCheckBox; // Add this field
 
@@ -83,6 +84,11 @@ public class PlotConfigPanel extends JPanel {
         pauseButton.setEnabled(false);
         subPanel2.add(pauseButton);
         
+        clearPlotButton = new JButton("Clear Plot");
+        clearPlotButton.setPreferredSize(new Dimension(110, 25));
+        clearPlotButton.setEnabled(true);
+        subPanel2.add(clearPlotButton);
+        
         add(subPanel1);
         add(subPanel2);
     }
@@ -99,5 +105,10 @@ public class PlotConfigPanel extends JPanel {
     /** @brief Gets the "Tags as names" checkbox. @return The JCheckBox instance. */
     public JCheckBox getTagsAsNamesCheckBox() {
         return tagsAsNamesCheckBox;
+    }
+    
+    /** @brief Gets the clear plot button. @return The clear plot JButton. */
+    public JButton getClearPlotButton() {
+        return clearPlotButton;
     }
 }
