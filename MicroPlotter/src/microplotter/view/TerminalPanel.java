@@ -1,11 +1,9 @@
 package microplotter.view;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;

@@ -1,7 +1,6 @@
 package microplotter;
 
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import microplotter.controller.ApplicationController;
 

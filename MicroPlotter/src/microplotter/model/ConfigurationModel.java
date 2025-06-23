@@ -33,20 +33,6 @@ public class ConfigurationModel {
     /** @brief Flag to use tags from serial data as series names in the plot. */
     private boolean useTagsAsNames = false; 
 
-    // --- Terminal and Recording State ---
-    /** @brief Flag indicating if incoming data is being recorded to a file. */
-    private boolean isFileRecording = false;
-    /** @brief The absolute path of the file being recorded to.  */
-    private String recordingFileName = "";
-    /** @brief Flag to add a carriage return ('\r') to sent messages.  */
-    private boolean addCR = false;
-    /** @brief Flag to add a newline ('\n') to sent messages.  */
-    private boolean addNL = false;
-    /** @brief Flag to show timestamps in the terminal output.  */
-    private boolean showTimestamp = true;
-    /** @brief Flag to enable auto-scrolling in the terminal.  */
-    private boolean autoScroll = true;
-
     /**
      * @brief Checks if the "Tags as names" feature is enabled.
      * @return True if tags should be used as series names, false otherwise.

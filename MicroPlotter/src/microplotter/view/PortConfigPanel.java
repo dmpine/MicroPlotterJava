@@ -1,6 +1,5 @@
 package microplotter.view;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import javax.swing.BorderFactory;
@@ -59,8 +58,6 @@ public class PortConfigPanel extends JPanel {
         // Button for connecting to port
         connectButton = new JButton("Connect");
         connectButton.setPreferredSize(new Dimension(100, 25));
-        connectButton.setOpaque(true);
-        connectButton.setBackground(Color.gray);
         connectButton.setEnabled(false);
         add(connectButton);
     }
