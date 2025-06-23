@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import java.awt.BorderLayout;
 
 /**
  * @brief A JPanel that provides the user interface for the serial terminal.
@@ -50,50 +51,61 @@ public class TerminalPanel extends JPanel {
      * @param width The initial width of the panel.
      * @param height The initial height of the panel.
      */
-    public TerminalPanel(int width, int height) {
-        setBorder(BorderFactory.createTitledBorder("Terminal"));
-        setPreferredSize(new Dimension(width - 2, height));
-
-        JPanel subPanel = new JPanel();
-        subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.Y_AXIS));
-
-        JPanel topControls = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        
-        topControls.add(new JLabel("Serial Message"));
-        messageTextField = new JTextField(20);
-        topControls.add(messageTextField);
-
-        sendButton = new JButton("Send");
-        sendButton.setEnabled(false);
-        topControls.add(sendButton);
-
-        addCRCheckBox = new JCheckBox("Add CR");
-        addCRCheckBox.setEnabled(false);
-        topControls.add(addCRCheckBox);
-
-        addNLCheckBox = new JCheckBox("Add NL");
-        addNLCheckBox.setEnabled(false);
-        topControls.add(addNLCheckBox);
-
-        timestampCheckBox = new JCheckBox("TimeStamp", true);
-        topControls.add(timestampCheckBox);
-
-        autoScrollCheckBox = new JCheckBox("AutoScroll", true);
-        topControls.add(autoScrollCheckBox);
-
-        recordButton = new JButton("Begin rec");
-        recordButton.setEnabled(false);
-        topControls.add(recordButton);
-
-        terminalTextArea = new JTextArea();
-        terminalTextArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(terminalTextArea);
-        scrollPane.setPreferredSize(new Dimension(width - 25, 120));
-
-        subPanel.add(topControls);
-        subPanel.add(scrollPane);
-        add(subPanel);
-    }
+	public TerminalPanel() {
+	    // The main panel will stack its children vertically
+	    super(new BorderLayout(5, 5));
+	    setBorder(BorderFactory.createTitledBorder("Terminal"));
+	
+	    // --- NEW, ROBUST LAYOUT STRUCTURE ---
+	
+	    // 1. Create a panel for the top input line using BorderLayout
+	    JPanel inputLinePanel = new JPanel(new BorderLayout(5, 5));
+	    
+	    inputLinePanel.add(new JLabel(" Serial Message:"), BorderLayout.WEST);
+	
+	    // This text field is now in the CENTER, so it will stretch horizontally
+	    messageTextField = new JTextField(); // No need for a column count
+	    inputLinePanel.add(messageTextField, BorderLayout.CENTER);
+	    
+	    sendButton = new JButton("Send");
+	    sendButton.setEnabled(false);
+	    inputLinePanel.add(sendButton, BorderLayout.EAST);
+	
+	    // 2. Create a separate panel for the checkboxes using FlowLayout
+	    JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 2));
+	
+	    addCRCheckBox = new JCheckBox("Add CR");
+	    addCRCheckBox.setEnabled(false);
+	    optionsPanel.add(addCRCheckBox);
+	
+	    addNLCheckBox = new JCheckBox("Add NL");
+	    addNLCheckBox.setEnabled(false);
+	    optionsPanel.add(addNLCheckBox);
+	
+	    timestampCheckBox = new JCheckBox("TimeStamp", true);
+	    optionsPanel.add(timestampCheckBox);
+	
+	    autoScrollCheckBox = new JCheckBox("AutoScroll", true);
+	    optionsPanel.add(autoScrollCheckBox);
+	
+	    recordButton = new JButton("Begin rec");
+	    recordButton.setEnabled(false);
+	    optionsPanel.add(recordButton);
+	    
+	    // 3. Combine the top panels into one container
+	    JPanel topSectionPanel = new JPanel(new BorderLayout());
+	    topSectionPanel.add(inputLinePanel, BorderLayout.NORTH);
+	    topSectionPanel.add(optionsPanel, BorderLayout.CENTER);
+	
+	    // 4. The main terminal output area
+	    terminalTextArea = new JTextArea(9, 0); // 8 rows, flexible columns
+	    terminalTextArea.setEditable(false);
+	    JScrollPane scrollPane = new JScrollPane(terminalTextArea);
+	
+	    // 5. Add the new structure to the main TerminalPanel
+	    add(topSectionPanel, BorderLayout.NORTH);
+	    add(scrollPane, BorderLayout.CENTER);
+	}
     
     /**
      * @brief Appends a line of text to the terminal display area and returns the formatted string.

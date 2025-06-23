@@ -39,9 +39,8 @@ public class MainWindow extends JFrame {
      */
     public MainWindow() {
         setTitle(Constants.APP_TITLE);
-        setSize(Constants.DEFAULT_WIDTH, Constants.DEFAULT_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
+        setResizable(true); // Allow resizing
 
         // Set the application icon
         Image icon = ResourceLoader.loadImage(Constants.LOGO_ICO);
@@ -53,25 +52,32 @@ public class MainWindow extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         JMenu windowMenu = new JMenu("Window");
         this.aboutMenuItem = new JMenuItem("About");
-        windowMenu.add(aboutMenuItem);
+        windowMenu.add(this.aboutMenuItem);
         menuBar.add(windowMenu);
         setJMenuBar(menuBar);
-        // Note: The ActionListener for 'aboutMenuItem' will be added by a controller.
 
-        // Main content panel
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        // --- NEW RESPONSIVE LAYOUT ---
+        // Main content panel now uses BorderLayout
+        JPanel mainPanel = new JPanel(new java.awt.BorderLayout(5, 5));
 
-        // Instantiate and add all the sub-panels
-        portConfigPanel = new PortConfigPanel(Constants.DEFAULT_WIDTH);
-        plotConfigPanel = new PlotConfigPanel(Constants.DEFAULT_WIDTH);
-        plotPanel = new PlotPanel(Constants.DEFAULT_WIDTH, 350);
-        terminalPanel = new TerminalPanel(Constants.DEFAULT_WIDTH, 200);
+        // Create a dedicated panel for the top configuration sections
+        JPanel configSectionPanel = new JPanel();
+        configSectionPanel.setLayout(new BoxLayout(configSectionPanel, BoxLayout.Y_AXIS));
+        
+        // Instantiate and add config panels to their own section
+        portConfigPanel = new PortConfigPanel();
+        plotConfigPanel = new PlotConfigPanel();
+        configSectionPanel.add(portConfigPanel);
+        configSectionPanel.add(plotConfigPanel);
+        
+        // Instantiate the main content and terminal panels
+        plotPanel = new PlotPanel();
+        terminalPanel = new TerminalPanel();
 
-        mainPanel.add(portConfigPanel);
-        mainPanel.add(plotConfigPanel);
-        mainPanel.add(plotPanel);
-        mainPanel.add(terminalPanel);
+        // Add the sections to the main panel's regions
+        mainPanel.add(configSectionPanel, java.awt.BorderLayout.NORTH);
+        mainPanel.add(plotPanel, java.awt.BorderLayout.CENTER); // Center grows
+        mainPanel.add(terminalPanel, java.awt.BorderLayout.SOUTH);
 
         add(mainPanel);
     }

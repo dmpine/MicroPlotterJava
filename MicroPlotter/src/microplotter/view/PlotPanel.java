@@ -37,10 +37,10 @@ public class PlotPanel extends JPanel {
      * @param width The initial width of the panel.
      * @param height The initial height of the panel.
      */
-    public PlotPanel(int width, int height) {
-        setLayout(new BorderLayout());
+    public PlotPanel() {
+    	setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Plot"));
-        setPreferredSize(new Dimension(width - 2, height));
+        // The setPreferredSize() line is now completely removed.
 
         chart = ChartFactory.createXYLineChart(null, null, null, null);
         chartPanel = new ChartPanel(chart);
@@ -48,7 +48,9 @@ public class PlotPanel extends JPanel {
         renderer = new XYLineAndShapeRenderer(true, false);
         chart.getXYPlot().setRenderer(renderer);
         
-        chartPanel.setPreferredSize(new Dimension(width - 10, height - 40));
+        chartPanel.setPreferredSize(new Dimension(500, 240)); 
+        
+        // We can also remove the ChartPanel's preferred size, as the BorderLayout will manage it.
         chartPanel.setEnabled(false);
         
         add(chartPanel, BorderLayout.CENTER);

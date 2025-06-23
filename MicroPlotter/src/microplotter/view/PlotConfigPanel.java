@@ -29,10 +29,10 @@ public class PlotConfigPanel extends JPanel {
     /** @brief Checkbox to enable using data tags as plot series names. */
     private JCheckBox tagsAsNamesCheckBox; // Add this field
 
-    public PlotConfigPanel(int width) {
+    public PlotConfigPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createTitledBorder("Plot configuration"));
-        setPreferredSize(new Dimension(width - 2, 90));
+        //setPreferredSize(new Dimension(width - 2, 90));
 
         JPanel subPanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JPanel subPanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));

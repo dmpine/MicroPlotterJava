@@ -2,6 +2,7 @@ package microplotter;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import microplotter.controller.ApplicationController;
 
 /**
@@ -11,25 +12,22 @@ import microplotter.controller.ApplicationController;
 public class Main {
     /**
      * @brief The main method that launches the application.
-     * @details This method is the primary entry point called by the Java Virtual Machine.
-     * It ensures that the GUI is created and managed on the AWT Event Dispatch Thread (EDT)
-     * by using `SwingUtilities.invokeLater`. It also attempts to set the application's look
-     * and feel to match the native operating system before creating an instance of the
-     * `ApplicationController` to start the program.
+     * @details This is the primary entry point called by the Java Virtual Machine.
+     * It sets up the modern FlatLaf look and feel and then uses
+     * `SwingUtilities.invokeLater` to safely create and launch the application UI.
      * @param args Command line arguments (not used by this application).
      */
     public static void main(String[] args) {
+        // --- SETUP THE MODERN LOOK AND FEEL ---
+        try {
+            FlatIntelliJLaf.setup(); // This sets a clean, modern "IntelliJ-like" theme.
+        } catch( Exception ex ) {
+            System.err.println( "Failed to initialize LaF" );
+        }
+
         System.out.println("Starting MicroPlotter...");
-        
-        // Ensure all UI operations happen on the Event Dispatch Thread (EDT) for thread safety.
         SwingUtilities.invokeLater(() -> {
-            try {
-                // Set the native look and feel for UI components (e.g., Windows, macOS style).
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                System.err.println("Could not set look and feel: " + e.getMessage());
-            }
-            // Start the application by creating the main controller, which builds the entire app.
+            // We no longer need to set the L&F here, as it's already done.
             new ApplicationController();
         });
     }

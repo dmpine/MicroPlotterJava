@@ -34,10 +34,10 @@ public class PortConfigPanel extends JPanel {
      * for serial port configuration.
      * @param width The initial width of the panel.
      */
-    public PortConfigPanel(int width) {
+    public PortConfigPanel() {
         super(new FlowLayout(FlowLayout.LEFT));
         setBorder(BorderFactory.createTitledBorder("Port configuration"));
-        setPreferredSize(new Dimension(width - 2, 60));
+        //setPreferredSize(new Dimension(width - 2, 60));
 
         // Button for searching available port
         searchButton = new JButton("Search port");

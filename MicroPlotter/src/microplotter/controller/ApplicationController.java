@@ -23,35 +23,37 @@ public class ApplicationController {
      * 3. Instantiates the other controllers (PlotController, SerialController), injecting the models and views they depend on. 
      * 4. Makes the main window visible to the user. 
      */
-    public ApplicationController() {
-    	// 1. Instantiate Models
-        SerialPortManager serialManager = new SerialPortManager();
-        ConfigurationModel configModel = new ConfigurationModel();
-        PlotDataModel plotDataModel = new PlotDataModel();
-        FileManager fileManager = new FileManager();
-
-        // 2. Instantiate Main View
-        MainWindow mainWindow = new MainWindow();
-
-        // 3. Wire up UI Actions
-        mainWindow.getAboutMenuItem().addActionListener(e -> {
-            // Load the icon using our resource loader
-            ImageIcon icon = microplotter.utils.ResourceLoader.loadIcon(microplotter.utils.Constants.LOGO_PNG);
-            // Show the JOptionPane with the message from our constants file
-            JOptionPane.showMessageDialog(
-                mainWindow,
-                microplotter.utils.Constants.ABOUT_MESSAGE,
-                "About MicroPlotter",
-                JOptionPane.INFORMATION_MESSAGE,
-                icon
-            );
-        });
-
-        // 4. Instantiate Controllers
-        PlotController plotController = new PlotController(mainWindow, plotDataModel, configModel);
-        new SerialController(mainWindow, serialManager, configModel, fileManager, plotController);
-
-        // 5. Make the application visible
-        mainWindow.setVisible(true);
-    }
+	public ApplicationController() {
+	    // 1. Instantiate Models
+	    SerialPortManager serialManager = new SerialPortManager();
+	    ConfigurationModel configModel = new ConfigurationModel();
+	    PlotDataModel plotDataModel = new PlotDataModel();
+	    FileManager fileManager = new FileManager();
+	
+	    // 2. Instantiate Main View
+	    MainWindow mainWindow = new MainWindow();
+	
+	    // 3. Wire up UI Actions
+	    mainWindow.getAboutMenuItem().addActionListener(e -> {
+	        ImageIcon icon = microplotter.utils.ResourceLoader.loadIcon(microplotter.utils.Constants.LOGO_PNG);
+	        JOptionPane.showMessageDialog(
+	            mainWindow,
+	            microplotter.utils.Constants.ABOUT_MESSAGE,
+	            "About MicroPlotter",
+	            JOptionPane.INFORMATION_MESSAGE,
+	            icon
+	        );
+	    });
+	
+	    // 4. Instantiate Controllers
+	    PlotController plotController = new PlotController(mainWindow, plotDataModel, configModel);
+	    new SerialController(mainWindow, serialManager, configModel, fileManager, plotController);
+	
+	    // --- NEW LAUNCH SEQUENCE ---
+	    // 5. Pack, Center, and Show the application
+	    mainWindow.pack(); // Size the window to fit the preferred sizes of its components
+	    mainWindow.setLocationRelativeTo(null); // Center the window on the screen
+	    mainWindow.setMinimumSize(mainWindow.getSize()); // Prevent resizing smaller than the initial size
+	    mainWindow.setVisible(true);
+	}
 }
