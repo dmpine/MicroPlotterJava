@@ -14,11 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>Images</name>
-			<type>2</type>
-			<location>F:/GHRepos/MicroPlotterJava/MicroPlotter/resources/Images</location>
-		</link>
-	</linkedResources>
 </projectDescription>
