@@ -28,7 +28,7 @@ public class ConfigurationManager {
         try (InputStream input = new FileInputStream(file)) {
             props.load(input);
 
-            // Load settings with defaults in case of parsing errors
+            // Load plot settings with defaults
             model.setPlotPresentation(props.getProperty("plot.presentation", "Static"));
             model.setDynamicSampleLimit(Integer.parseInt(props.getProperty("plot.sampleLimit", "50")));
             model.setUpdateTime(Double.parseDouble(props.getProperty("plot.updateTime", "3.0")));
@@ -36,6 +36,11 @@ public class ConfigurationManager {
             model.setXAxisType(props.getProperty("plot.xAxisType", "Dec"));
             model.setYAxisType(props.getProperty("plot.yAxisType", "Dec"));
             model.setUseTagsAsNames(Boolean.parseBoolean(props.getProperty("plot.useTagsAsNames", "false")));
+            
+            // Load networking settings with defaults
+            model.setHttpEnabled(Boolean.parseBoolean(props.getProperty("network.http.enabled", "false")));
+            model.setHttpUrl(props.getProperty("network.http.url", ""));
+            model.setNetworkBufferLimit(Integer.parseInt(props.getProperty("network.http.bufferLimit", "10")));
 
             System.out.println("Configuration loaded from " + file.getAbsolutePath());
 
@@ -52,7 +57,7 @@ public class ConfigurationManager {
     public static void saveConfiguration(ConfigurationModel model, File file) {
         Properties props = new Properties();
 
-        // Set properties from the model
+        // Set plot properties from the model
         props.setProperty("plot.presentation", model.getPlotPresentation());
         props.setProperty("plot.sampleLimit", String.valueOf(model.getDynamicSampleLimit()));
         props.setProperty("plot.updateTime", String.valueOf(model.getUpdateTime()));
@@ -60,6 +65,12 @@ public class ConfigurationManager {
         props.setProperty("plot.xAxisType", model.getXAxisType());
         props.setProperty("plot.yAxisType", model.getYAxisType());
         props.setProperty("plot.useTagsAsNames", String.valueOf(model.useTagsAsNames()));
+
+        // Set networking properties from the model
+        props.setProperty("network.http.enabled", String.valueOf(model.isHttpEnabled()));
+        props.setProperty("network.http.url", model.getHttpUrl());
+        props.setProperty("network.http.bufferLimit", String.valueOf(model.getNetworkBufferLimit()));
+
 
         try (OutputStream output = new FileOutputStream(file)) {
             props.store(output, "MicroPlotter Configuration");
