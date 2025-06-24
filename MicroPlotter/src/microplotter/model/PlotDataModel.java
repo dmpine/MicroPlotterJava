@@ -3,72 +3,82 @@ package microplotter.model;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * @brief Manages the data for plotting.
- * @details This class holds the data series for the chart, handles adding new data points,
- * and provides methods to manipulate and retrieve the dataset for display. It encapsulates
- * the JFreeChart data structures.
+ * @brief Manages the data for plotting using a dynamic tag-based system.
+ * @details This class holds the data series for the chart. It uses a map to
+ * dynamically assign data to a specific series based on a string tag, ensuring
+ * that data for the same tag always goes to the same series.
  */
 public class PlotDataModel {
-    /** @brief A list to hold all potential XYSeries objects for the plot. */
-    private final List<XYSeries> dataSeries;
     /** @brief The collection of series that is actually passed to the chart for rendering. */
     private final XYSeriesCollection dataset;
-    /** @brief A counter for the X-axis value, representing discrete time steps or samples. */
-    private int xCounter = 0;
-    /** @brief The maximum number of data series supported by the model. */
+    /** @brief The maximum number of concurrent data series supported by the model. */
     private final int maxSeries = 10;
     
+    /** @brief A pool of reusable XYSeries objects. */
+    private final List<XYSeries> seriesPool;
+    /** @brief A map that links a string tag (e.g., "SINE") to a specific XYSeries object from the pool. */
+    private final Map<String, XYSeries> activeTaggedSeries;
+
     /**
      * @brief Constructs a new PlotDataModel.
-     * @details Initializes the data structures and pre-allocates the series objects.
+     * @details Initializes the data structures, including the series pool and the map for active series.
      */
     public PlotDataModel() {
-        this.dataSeries = new ArrayList<>();
         this.dataset = new XYSeriesCollection();
-        initializeSeries();
+        this.seriesPool = new ArrayList<>();
+        this.activeTaggedSeries = new LinkedHashMap<>(); // Maintains insertion order for consistent legend
+        initializeSeriesPool();
     }
     
     /**
-     * @brief Initializes the fixed number of XYSeries objects.
-     * @details Creates and adds the maximum number of series to the internal list,
-     * each with a default name like "D0", "D1", etc.
+     * @brief Initializes the fixed number of XYSeries objects in the pool.
+     * @details Creates and adds the maximum number of series, each configured to allow
+     * duplicate X-values to prevent crashes from rapid data arrival.
      */
-    private void initializeSeries() {
+    private void initializeSeriesPool() {
         for (int i = 0; i < maxSeries; i++) {
-            XYSeries series = new XYSeries("D" + i);
-            dataSeries.add(series);
+            // The last 'true' argument allows duplicate X-values, increasing stability.
+            seriesPool.add(new XYSeries("D" + i, true, true));
         }
     }
     
     /**
-     * @brief Adds a new data point to a specific series.
-     * @param seriesIndex The index of the series to which the data point should be added.
-     * @param value The Y-value of the data point. The current xCounter is used for the X-value.
+     * @brief Adds a data point (x,y) to a series identified by a tag.
+     * @details If the tag is encountered for the first time, it assigns the next available
+     * series from the pool to that tag. It then adds the new data point to the correct series.
+     * @param tag The string tag for the data series (e.g., "SINE").
+     * @param x The X-value of the data point.
+     * @param y The Y-value of the data point.
      */
-    public void addDataPoint(int seriesIndex, double value) {
-        if (seriesIndex >= 0 && seriesIndex < dataSeries.size()) {
-            dataSeries.get(seriesIndex).add(xCounter, value);
+    public void addDataPoint(String tag, double x, double y) {
+        XYSeries series = activeTaggedSeries.get(tag);
+
+        // If this is a new tag and we have a series available in the pool...
+        if (series == null && activeTaggedSeries.size() < maxSeries) {
+            series = seriesPool.get(activeTaggedSeries.size());
+            series.setKey(tag); // Assign the new tag as its name for the legend
+            activeTaggedSeries.put(tag, series); // Add to our map of active series
+        }
+        
+        // If the series exists (either it was found or just assigned), add the data point.
+        if (series != null) {
+            series.add(x, y);
         }
     }
     
     /**
-     * @brief Increments the global X-axis counter by one.
-     */
-    public void incrementXCounter() {
-        xCounter++;
-    }
-    
-    /**
-     * @brief Limits the number of items in each series for dynamic plotting.
-     * @details For each series, it removes the oldest data points (from the beginning)
-     * until the item count is equal to or less than the specified maxSize.
+     * @brief Limits the number of items in each active series for dynamic plotting.
+     * @details For each active series, it removes the oldest data points until the item
+     * count is equal to or less than the specified maxSize.
      * @param maxSize The maximum number of data points to retain in each series.
      */
     public void limitSeriesSize(int maxSize) {
-        for (XYSeries series : dataSeries) {
+        for (XYSeries series : activeTaggedSeries.values()) {
             while (series.getItemCount() > maxSize) {
                 series.remove(0);
             }
@@ -77,65 +87,28 @@ public class PlotDataModel {
     
     /**
      * @brief Gets the collection of currently active data series for rendering.
-     * @param activeSeriesCount The number of series that should be included in the dataset.
-     * @return An XYSeriesCollection containing only the active series with data.
+     * @return An XYSeriesCollection containing only the series that have received data.
      */
-    public XYSeriesCollection getDataset(int activeSeriesCount) {
+    public XYSeriesCollection getDataset() {
         dataset.removeAllSeries();
-        for (int i = 0; i < Math.min(activeSeriesCount, dataSeries.size()); i++) {
-            if (dataSeries.get(i).getItemCount() > 0) {
-                dataset.addSeries(dataSeries.get(i));
-            }
+        for (XYSeries series : activeTaggedSeries.values()) {
+            dataset.addSeries(series);
         }
         return dataset;
     }
     
     /**
-     * @brief Counts how many series currently contain one or more data points.
-     * @return The number of active (non-empty) series.
-     */
-    public int getActiveSeriesCount() {
-        int count = 0;
-        for (XYSeries series : dataSeries) {
-            if (series.getItemCount() > 0) {
-                count++;
-            }
-        }
-        return count;
-    }
-    
-    /**
-     * @brief Sets the display name (key) for a specific series.
-     * @param seriesIndex The index of the series to rename.
-     * @param name The new name for the series legend.
-     */
-    public void setSeriesName(int seriesIndex, String name) {
-        if (seriesIndex >= 0 && seriesIndex < dataSeries.size()) {
-            // Use setKey to change the legend name
-            dataSeries.get(seriesIndex).setKey(name);
-        }
-    }
-
-    /**
-     * @brief Resets all series names to their default "D0", "D1", etc.
-     */
-    public void resetSeriesNames() {
-        for (int i = 0; i < maxSeries; i++) {
-            if (i < dataSeries.size()) {
-                dataSeries.get(i).setKey("D" + i);
-            }
-        }
-    }
-    
-    /**
-     * @brief Clears all data from all series and resets the X-counter.
-     * @details This is used to prepare the model for a new plotting session.
+     * @brief Clears all data and resets the model to its initial state.
+     * @details This clears the map of active series, removes all series from the dataset,
+     * and resets each series in the pool to be empty and have its default name (e.g., "D0").
      */
     public void clearData() {
-        for(XYSeries series : dataSeries) {
-            series.clear();
+        activeTaggedSeries.clear();
+        dataset.removeAllSeries();
+        
+        for (int i = 0; i < maxSeries; i++) {
+            seriesPool.get(i).clear();
+            seriesPool.get(i).setKey("D" + i);
         }
-        xCounter = 0;
-        resetSeriesNames(); // Also reset names when clearing data
     }
 }
