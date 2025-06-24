@@ -15,6 +15,8 @@ import microplotter.utils.Constants;
 import microplotter.utils.FileManager;
 import microplotter.view.MainWindow;
 
+import microplotter.view.HttpConfigDialog;
+
 /**
  * @brief The main controller that initializes and wires together all components of the application.
  * @details This class acts as the application's entry point after the Main class.
@@ -114,6 +116,12 @@ public class ApplicationController {
                 JOptionPane.INFORMATION_MESSAGE,
                 icon
             );
+        });
+        
+        // Networking Menu Action
+        mainWindow.getHttpConfigMenuItem().addActionListener(e -> {
+            HttpConfigDialog httpDialog = new HttpConfigDialog(mainWindow, configModel);
+            httpDialog.setVisible(true); // This dialog will save the changes to the model
         });
     }
 }

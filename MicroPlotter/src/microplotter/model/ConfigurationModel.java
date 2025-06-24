@@ -32,6 +32,14 @@ public class ConfigurationModel {
     
     /** @brief Flag to use tags from serial data as series names in the plot. */
     private boolean useTagsAsNames = false; 
+    
+    // --- Networking State ---
+    /** @brief Flag indicating if HTTP data sending is enabled. */
+    private boolean httpEnabled = false;
+    /** @brief The URL for the HTTP endpoint. */
+    private String httpUrl = "";
+    /** @brief The number of data lines to buffer before sending a network packet. */
+    private int networkBufferLimit = 10;
 
     /**
      * @brief Checks if the "Tags as names" feature is enabled.
@@ -192,4 +200,14 @@ public class ConfigurationModel {
     public void setYAxisType(String yAxisType) {
         this.yAxisType = yAxisType;
     }
+    
+    // Network related stuff
+    public boolean isHttpEnabled() { return httpEnabled; }
+    public void setHttpEnabled(boolean httpEnabled) { this.httpEnabled = httpEnabled; }
+
+    public String getHttpUrl() { return httpUrl; }
+    public void setHttpUrl(String httpUrl) { this.httpUrl = httpUrl; }
+
+    public int getNetworkBufferLimit() { return networkBufferLimit; }
+    public void setNetworkBufferLimit(int networkBufferLimit) { this.networkBufferLimit = networkBufferLimit; }
 }

@@ -34,6 +34,9 @@ public class MainWindow extends JFrame {
     private JMenuItem saveConfigMenuItem;
     /** @brief Menu option load configuration. */
     private JMenuItem loadConfigMenuItem;
+    
+    /** @brief Menu option for http configuration. */
+    private JMenuItem httpConfigMenuItem;
 
     /**
      * @brief Constructs the main application window.
@@ -61,6 +64,12 @@ public class MainWindow extends JFrame {
         fileMenu.add(saveConfigMenuItem);
         fileMenu.add(loadConfigMenuItem);
         menuBar.add(fileMenu);
+        
+        // --- NEW NETWORKING MENU ---
+        JMenu networkingMenu = new JMenu("Networking");
+        httpConfigMenuItem = new JMenuItem("HTTP Endpoint...");
+        networkingMenu.add(httpConfigMenuItem);
+        menuBar.add(networkingMenu);
         
         JMenu windowMenu = new JMenu("Window");
         this.aboutMenuItem = new JMenuItem("About");
@@ -126,4 +135,7 @@ public class MainWindow extends JFrame {
     public JMenuItem getSaveConfigMenuItem() { return saveConfigMenuItem; }
     /** @brief Gets the 'Load Configuration' menu item. @return The JMenuItem. */
     public JMenuItem getLoadConfigMenuItem() { return loadConfigMenuItem; }
+    
+    /** @brief Gets the 'HTTP Endpoint' menu item. @return The JMenuItem. */
+    public JMenuItem getHttpConfigMenuItem() { return httpConfigMenuItem; }
 }

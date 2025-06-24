@@ -14,6 +14,10 @@ import microplotter.view.PlotConfigPanel;
 import microplotter.view.PortConfigPanel;
 import microplotter.view.TerminalPanel;
 
+import java.util.ArrayList;
+import java.util.List;
+import microplotter.networking.HttpRequestManager;
+
 /**
  * @brief Controller for all serial port related actions.
  * @details This class manages all user interactions related to serial communication.
@@ -41,6 +45,9 @@ public class SerialController implements SerialPortDataListener {
 
     /** @brief A buffer to accumulate incoming serial data until a newline is received. */
     private String receivedDataBuffer = "";
+    
+    /** @brief A buffer to hold data lines before sending them over the network. */
+    private final List<String> networkDataBuffer = new ArrayList<>();
 
     /**
      * @brief Constructs the SerialController.
@@ -272,6 +279,21 @@ public class SerialController implements SerialPortDataListener {
             // The plot controller still receives the original, raw line for parsing.
             if (configModel.isPlotting()) {
                 plotController.processData(line);
+            }
+            
+            if (configModel.isHttpEnabled()) {
+                networkDataBuffer.add(line);
+                
+                if (networkDataBuffer.size() >= configModel.getNetworkBufferLimit()) {
+                    // Create a simple JSON payload
+                    String payload = "{\"data\":[\"" + String.join("\",\"", networkDataBuffer) + "\"]}";
+                    
+                    // Send the data
+                    HttpRequestManager.sendPostRequest(configModel.getHttpUrl(), payload);
+                    
+                    // Clear the buffer
+                    networkDataBuffer.clear();
+                }
             }
         });
     }
