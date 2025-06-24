@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import microplotter.networking.HttpRequestManager;
 
+import microplotter.model.DataProcessor;
+
 /**
  * @brief Controller for all serial port related actions.
  * @details This class manages all user interactions related to serial communication.
@@ -268,28 +270,47 @@ public class SerialController implements SerialPortDataListener {
      */
     private void processReceivedLine(final String line) {
         SwingUtilities.invokeLater(() -> {
-            // First, append the text to the terminal and capture the final, formatted string.
             String displayedLine = terminalPanel.appendText(line);
-
-            // If recording, write the fully formatted (timestamped) string to the file.
             if (fileManager.isRecording()) {
                 fileManager.writeData(displayedLine);
             }
-
-            // The plot controller still receives the original, raw line for parsing.
             if (configModel.isPlotting()) {
                 plotController.processData(line);
             }
-            
+
+            // --- NEW, IMPROVED LOGIC for Network Sending ---
             if (configModel.isHttpEnabled()) {
                 networkDataBuffer.add(line);
                 
                 if (networkDataBuffer.size() >= configModel.getNetworkBufferLimit()) {
-                    // Create a simple JSON payload
-                    String payload = "{\"data\":[\"" + String.join("\",\"", networkDataBuffer) + "\"]}";
-                    
+                    // Use a StringBuilder for efficient string creation
+                    StringBuilder payloadBuilder = new StringBuilder();
+                    payloadBuilder.append("["); // Start of JSON array
+
+                    for (int i = 0; i < networkDataBuffer.size(); i++) {
+                        String dataLine = networkDataBuffer.get(i);
+                        DataProcessor.ParsedData parsed = DataProcessor.parseSerialData(dataLine, true);
+
+                        if (parsed.columnCount > 0) {
+                            payloadBuilder.append("{"); // Start of JSON object for this line
+                            for (int j = 0; j < parsed.columnCount; j++) {
+                                payloadBuilder.append("\"").append(parsed.tags[j]).append("\":");
+                                payloadBuilder.append(parsed.values[j]);
+                                if (j < parsed.columnCount - 1) {
+                                    payloadBuilder.append(",");
+                                }
+                            }
+                            payloadBuilder.append("}"); // End of JSON object
+                            
+                            if (i < networkDataBuffer.size() - 1) {
+                                payloadBuilder.append(",");
+                            }
+                        }
+                    }
+                    payloadBuilder.append("]"); // End of JSON array
+
                     // Send the data
-                    HttpRequestManager.sendPostRequest(configModel.getHttpUrl(), payload);
+                    HttpRequestManager.sendPostRequest(configModel.getHttpUrl(), payloadBuilder.toString());
                     
                     // Clear the buffer
                     networkDataBuffer.clear();
