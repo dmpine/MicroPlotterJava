@@ -5,6 +5,8 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import microplotter.utils.AppLogger;
+
 // TODO: Add doxygen comments to this file
 
 public class MqttManager {
@@ -26,13 +28,12 @@ public class MqttManager {
             }
             options.setCleanSession(true);
 
-            System.out.println("Connecting to MQTT broker: " + brokerUri);
+            AppLogger.info("Connecting to MQTT broker: " + brokerUri);
             client.connect(options);
-            System.out.println("Connected successfully.");
+            AppLogger.info("MQTT connected successfully.");
             return true;
         } catch (Exception e) {
-            System.err.println("MQTT Connection failed: " + e.getMessage());
-            e.printStackTrace();
+        	AppLogger.severe("MQTT Connection failed: " + e.getMessage(), e);
             return false;
         }
     }
@@ -42,7 +43,9 @@ public class MqttManager {
         new Thread(() -> {
             try {
                 client.publish(topic, new MqttMessage(payload.getBytes()));
-            } catch (Exception e) { System.err.println("MQTT Publish failed: " + e.getMessage()); }
+            } catch (Exception e) { 
+                AppLogger.severe("MQTT Publish failed: " + e.getMessage(), e);
+            }
         }).start();
     }
 

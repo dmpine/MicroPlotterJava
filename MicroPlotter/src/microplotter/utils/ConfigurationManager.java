@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.util.Properties;
 import microplotter.model.ConfigurationModel;
 
+import microplotter.utils.AppLogger;
+
 /**
  * @brief Manages saving and loading of the application's configuration.
  * @details This utility class handles the conversion of a ConfigurationModel object
@@ -52,9 +54,10 @@ public class ConfigurationManager {
             model.setMqttBaseTopic(props.getProperty("network.mqtt.baseTopic", "microplotter/data"));
 
             System.out.println("Configuration loaded from " + file.getAbsolutePath());
+            AppLogger.info("Configuration loaded from " + file.getAbsolutePath());
 
         } catch (IOException | NumberFormatException e) {
-            System.err.println("Error loading configuration file: " + e.getMessage());
+        	AppLogger.severe("Error loading configuration file: " + e.getMessage(), e);
         }
     }
 
@@ -92,8 +95,9 @@ public class ConfigurationManager {
         try (OutputStream output = new FileOutputStream(file)) {
             props.store(output, "MicroPlotter Configuration");
             System.out.println("Configuration saved to " + file.getAbsolutePath());
+            AppLogger.info("Configuration saved to " + file.getAbsolutePath());
         } catch (IOException e) {
-            System.err.println("Error saving configuration file: " + e.getMessage());
+        	AppLogger.severe("Error saving configuration file: " + e.getMessage(), e);
         }
     }
 }

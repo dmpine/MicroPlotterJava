@@ -10,6 +10,9 @@ import javax.swing.JPanel;
 import microplotter.utils.Constants;
 import microplotter.utils.ResourceLoader;
 
+import javax.swing.JSplitPane;
+import microplotter.view.StatusBar;
+
 /**
  * @brief The main application window (JFrame).
  * @details This class extends JFrame and serves as the primary container for the entire
@@ -39,6 +42,9 @@ public class MainWindow extends JFrame {
     private JMenuItem httpConfigMenuItem;
     /** @brief Menu option for mqtt configuration. */
     private JMenuItem mqttConfigMenuItem;
+    
+    /** @brief The panel for displaying application status. */
+    private StatusBar statusBar; 
 
     /**
      * @brief Constructs the main application window.
@@ -101,11 +107,18 @@ public class MainWindow extends JFrame {
         // Instantiate the main content and terminal panels
         plotPanel = new PlotPanel();
         terminalPanel = new TerminalPanel();
+        
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, plotPanel, terminalPanel);
+        splitPane.setResizeWeight(0.7); // Give 70% of space to the plot initially
+        splitPane.setBorder(null);
+        
+     // Instantiate the status bar
+        statusBar = new StatusBar();
 
         // Add the sections to the main panel's regions
         mainPanel.add(configSectionPanel, java.awt.BorderLayout.NORTH);
-        mainPanel.add(plotPanel, java.awt.BorderLayout.CENTER); // Center grows
-        mainPanel.add(terminalPanel, java.awt.BorderLayout.SOUTH);
+        mainPanel.add(splitPane, java.awt.BorderLayout.CENTER);
+        mainPanel.add(statusBar, java.awt.BorderLayout.SOUTH);
 
         add(mainPanel);
     }
@@ -147,4 +160,10 @@ public class MainWindow extends JFrame {
     
     /** @brief Gets the 'Arduino Cloud (MQTT)' menu item. @return The JMenuItem. */
     public JMenuItem getMqttConfigMenuItem() { return mqttConfigMenuItem; }
+    
+    /**
+     * @brief Gets the status bar panel.
+     * @return The instance of the StatusBar.
+     */
+    public StatusBar getStatusBar() { return statusBar; }
 }

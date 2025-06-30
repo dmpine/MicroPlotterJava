@@ -20,6 +20,10 @@ import microplotter.networking.HttpRequestManager;
 
 import microplotter.model.DataProcessor;
 
+import microplotter.view.StatusBar;
+
+import microplotter.utils.AppLogger;
+
 /**
  * @brief Controller for all serial port related actions.
  * @details This class manages all user interactions related to serial communication.
@@ -52,6 +56,9 @@ public class SerialController implements SerialPortDataListener {
     private final List<String> networkDataBuffer = new ArrayList<>();
     
     private final NetworkingController networkingController;
+    
+    /** @brief The UI component for displaying application status. */
+    private final StatusBar statusBar;
 
     /**
      * @brief Constructs the SerialController.
@@ -63,7 +70,7 @@ public class SerialController implements SerialPortDataListener {
      * @param fileManager The file management utility.
      * @param plotController The plot controller, for forwarding data.
      */
-    public SerialController(MainWindow mainWindow, SerialPortManager serialManager, ConfigurationModel configModel, FileManager fileManager, PlotController plotController, NetworkingController networkingController) {
+    public SerialController(MainWindow mainWindow, SerialPortManager serialManager, ConfigurationModel configModel, FileManager fileManager, PlotController plotController, NetworkingController networkingController, StatusBar statusBar) {
         this.mainWindow = mainWindow;
         this.serialManager = serialManager;
         this.configModel = configModel;
@@ -72,6 +79,7 @@ public class SerialController implements SerialPortDataListener {
         this.networkingController = networkingController;
         this.portConfigPanel = mainWindow.getPortConfigPanel();
         this.terminalPanel = mainWindow.getTerminalPanel();
+        this.statusBar = statusBar;
         initListeners();
     }
 
@@ -130,10 +138,14 @@ public class SerialController implements SerialPortDataListener {
         String selectedPort = (String) portConfigPanel.getPortComboBox().getSelectedItem();
         int baudRate = Integer.parseInt((String) portConfigPanel.getBaudRateComboBox().getSelectedItem());
 
+        statusBar.setStatus("Connecting to " + selectedPort + " at " + baudRate + " baud...");
         if (serialManager.connect(selectedPort, baudRate)) {
             configModel.setConnected(true);
             serialManager.addDataListener(this);
             updateUIForConnectionState();
+            statusBar.setStatus("Successfully connected to " + selectedPort + ".");
+        } else {
+            statusBar.setStatus("Failed to connect to " + selectedPort + ".");
         }
     }
 
@@ -147,6 +159,7 @@ public class SerialController implements SerialPortDataListener {
             fileManager.stopRecording();
         }
         updateUIForConnectionState();
+        statusBar.setStatus("Disconnected from serial port.");
     }
     
     /**
@@ -261,7 +274,7 @@ public class SerialController implements SerialPortDataListener {
                 receivedDataBuffer = lines[lines.length - 1]; // Keep the last partial line
             }
         } catch (Exception e) {
-            System.err.println("Serial event error: " + e.getMessage());
+        	AppLogger.severe("Serial event error: " + e.getMessage(), e);
         }
     }
 

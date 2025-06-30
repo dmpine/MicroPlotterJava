@@ -5,6 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import microplotter.utils.AppLogger;
+
 /**
  * @brief Utility class to handle sending HTTP POST requests.
  */
@@ -39,7 +41,7 @@ public class HttpRequestManager {
                 conn.disconnect();
 
             } catch (Exception e) {
-                System.err.println("HTTP Request failed: " + e.getMessage());
+            	AppLogger.severe("HTTP Request failed: " + e.getMessage(), e);
             }
         }).start();
     }

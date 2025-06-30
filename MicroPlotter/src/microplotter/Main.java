@@ -4,6 +4,8 @@ import javax.swing.SwingUtilities;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import microplotter.controller.ApplicationController;
 
+import microplotter.utils.AppLogger;
+
 /**
  * @brief The main entry point class for the MicroPlotter application.
  * @author danielpineda
@@ -16,18 +18,18 @@ public class Main {
      * `SwingUtilities.invokeLater` to safely create and launch the application UI.
      * @param args Command line arguments (not used by this application).
      */
-    public static void main(String[] args) {
-        // --- SETUP THE MODERN LOOK AND FEEL ---
-        try {
-            FlatIntelliJLaf.setup(); // This sets a clean, modern "IntelliJ-like" theme.
-        } catch( Exception ex ) {
-            System.err.println( "Failed to initialize LaF" );
-        }
+	public static void main(String[] args) {
+	    AppLogger.info("Application starting up.");
+	    try {
+	        FlatIntelliJLaf.setup();
+	    } catch( Exception ex ) {
+	        AppLogger.severe("Failed to initialize LaF", ex);
+	    }
 
-        System.out.println("Starting MicroPlotter...");
-        SwingUtilities.invokeLater(() -> {
-            // We no longer need to set the L&F here, as it's already done.
-            new ApplicationController();
-        });
-    }
+	    System.out.println("Starting MicroPlotter...");
+	    SwingUtilities.invokeLater(() -> {
+	        new ApplicationController();
+	        AppLogger.info("Application Controller initialized and UI is visible.");
+	    });
+	}
 }

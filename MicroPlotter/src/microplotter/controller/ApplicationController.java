@@ -59,8 +59,8 @@ public class ApplicationController {
 
         // 3. Instantiate ALL Controllers
         this.plotController = new PlotController(mainWindow, plotDataModel, configModel);
-        this.networkingController = new NetworkingController(configModel);
-        new SerialController(mainWindow, serialManager, configModel, fileManager, plotController, networkingController);
+        this.networkingController = new NetworkingController(configModel, mainWindow.getStatusBar());
+        new SerialController(mainWindow, serialManager, configModel, fileManager, plotController, networkingController, mainWindow.getStatusBar());
         
         // 4. Wire up UI and sync model
         plotController.syncViewToModel();
