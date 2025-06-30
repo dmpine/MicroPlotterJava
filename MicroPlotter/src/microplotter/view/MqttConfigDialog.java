@@ -8,8 +8,6 @@ import java.awt.Insets;
 import javax.swing.*;
 import microplotter.model.ConfigurationModel;
 
-// TODO: Add doxygen comments to this file
-
 @SuppressWarnings("serial")
 public class MqttConfigDialog extends JDialog {
 
@@ -35,27 +33,26 @@ public class MqttConfigDialog extends JDialog {
         gbc.insets = new Insets(4, 4, 4, 4);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Row 0: Enable Checkbox
+        // Row 0 & 1: Checkboxes
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         enableCheckBox = new JCheckBox("Enable MQTT Publishing", model.isMqttEnabled());
         fieldsPanel.add(enableCheckBox, gbc);
 
-        // Row 1: SSL Checkbox
         gbc.gridy = 1;
-        sslCheckBox = new JCheckBox("Use SSL/TLS", "ssl".equals(model.getMqttProtocol()));
+        sslCheckBox = new JCheckBox("Use SSL/TLS for connection", model.isMqttSslEnabled());
         fieldsPanel.add(sslCheckBox, gbc);
 
-        // Reset grid constraints for entries
+        // Reset grid constraints for the rest of the entries
         gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.EAST;
 
         // Add fields for Broker, Port, etc.
         addEntry(fieldsPanel, gbc, 2, "Broker Address:", brokerField = new JTextField(model.getMqttBrokerAddress(), 30));
         addEntry(fieldsPanel, gbc, 3, "Port:", portField = new JTextField(model.getMqttPort(), 30));
-        addEntry(fieldsPanel, gbc, 4, "Username (Optional):", usernameField = new JTextField(model.getMqttUsername(), 30));
-        addEntry(fieldsPanel, gbc, 5, "Password (Optional):", passwordField = new JPasswordField(model.getMqttPassword(), 30));
+        addEntry(fieldsPanel, gbc, 4, "Username:", usernameField = new JTextField(model.getMqttUsername(), 30));
+        addEntry(fieldsPanel, gbc, 5, "Password:", passwordField = new JPasswordField(model.getMqttPassword(), 30));
         addEntry(fieldsPanel, gbc, 6, "Base Topic:", baseTopicField = new JTextField(model.getMqttBaseTopic(), 30));
 
         mainPanel.add(fieldsPanel, BorderLayout.CENTER);
@@ -74,7 +71,7 @@ public class MqttConfigDialog extends JDialog {
         setResizable(false);
         setLocationRelativeTo(parent);
     }
-
+    
     private void addEntry(JPanel p, GridBagConstraints g, int y, String l, JComponent c) {
         g.gridy = y; g.gridx = 0; g.fill = GridBagConstraints.NONE; g.weightx = 0; p.add(new JLabel(l), g);
         g.gridx = 1; g.fill = GridBagConstraints.HORIZONTAL; g.weightx = 1.0; p.add(c, g);
@@ -82,7 +79,7 @@ public class MqttConfigDialog extends JDialog {
 
     public void saveAndClose() {
         configModel.setMqttEnabled(enableCheckBox.isSelected());
-        configModel.setMqttProtocol(sslCheckBox.isSelected() ? "ssl" : "tcp");
+        configModel.setMqttSslEnabled(sslCheckBox.isSelected());
         configModel.setMqttBrokerAddress(brokerField.getText());
         configModel.setMqttPort(portField.getText());
         configModel.setMqttUsername(usernameField.getText());

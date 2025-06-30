@@ -55,8 +55,8 @@ public class ConfigurationModel {
     private String mqttPassword = "";
     /** @brief The base topic for publishing data (e.g., "microplotter/data"). */
     private String mqttBaseTopic = "microplotter/data";
-    /** @brief The protocol for the MQTT connection ("tcp" or "ssl"). */
-    private String mqttProtocol = "tcp";
+    /** @brief Flag indicating if the MQTT connection should use SSL/TLS. */
+    private boolean mqttSslEnabled = true;
 
 
     /**
@@ -249,6 +249,7 @@ public class ConfigurationModel {
     public String getMqttBaseTopic() { return mqttBaseTopic; }
     public void setMqttBaseTopic(String mqttBaseTopic) { this.mqttBaseTopic = mqttBaseTopic; }
     
-    public String getMqttProtocol() { return mqttProtocol; }
-    public void setMqttProtocol(String protocol) { this.mqttProtocol = protocol; }
+    public boolean isMqttSslEnabled() { return mqttSslEnabled; }
+    public void setMqttSslEnabled(boolean enabled) { this.mqttSslEnabled = enabled; }
+    
 }

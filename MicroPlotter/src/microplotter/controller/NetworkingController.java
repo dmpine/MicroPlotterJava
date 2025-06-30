@@ -5,8 +5,6 @@ import microplotter.model.DataProcessor.ParsedData;
 import microplotter.networking.MqttManager;
 import microplotter.view.MqttConfigDialog;
 
-// TODO: Add doxygen comments to this file
-
 public class NetworkingController {
     private final ConfigurationModel configModel;
     private final MqttManager mqttManager;
@@ -23,21 +21,31 @@ public class NetworkingController {
         });
     }
 
+    /**
+     * @brief Connects or disconnects the MQTT client based on the current configuration.
+     * @details This method contains the core logic to handle both standard MQTT connections
+     * and the special authentication required for the Arduino IoT Cloud.
+     */
     public void applyMqttConnectionState() {
-        if (configModel.isMqttEnabled()) {
-            mqttManager.connect(
-                configModel.getMqttProtocol(),
-                configModel.getMqttBrokerAddress(),
-                configModel.getMqttPort(),
-                configModel.getMqttUsername(),
-                configModel.getMqttPassword()
-            );
-        } else {
+        if (!configModel.isMqttEnabled()) {
             mqttManager.disconnect();
+            return;
         }
+
+        // This is now a simple, general-purpose connection logic
+        String protocol = configModel.isMqttSslEnabled() ? "ssl" : "tcp";
+        
+        mqttManager.connect(
+            protocol,
+            configModel.getMqttBrokerAddress(),
+            configModel.getMqttPort(),
+            configModel.getMqttUsername(),
+            configModel.getMqttPassword()
+        );
     }
 
     public void processAndPublishData(ParsedData parsedData) {
+        // This method remains unchanged
         String baseTopic = configModel.getMqttBaseTopic();
         if (baseTopic == null || baseTopic.trim().isEmpty()) return;
 
@@ -50,6 +58,7 @@ public class NetworkingController {
     }
     
     public void disconnectMqtt() {
+        // This method remains unchanged
         mqttManager.disconnect();
     }
 }
