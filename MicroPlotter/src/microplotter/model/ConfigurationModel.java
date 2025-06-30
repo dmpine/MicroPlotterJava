@@ -1,5 +1,7 @@
 package microplotter.model;
 
+// TODO: Add doxygen comments to this file
+
 /**
  * @brief Holds the application's configuration and run-time state.
  * @details This class acts as a central repository for all user-configurable settings
@@ -40,6 +42,22 @@ public class ConfigurationModel {
     private String httpUrl = "";
     /** @brief The number of data lines to buffer before sending a network packet. */
     private int networkBufferLimit = 10;
+    
+    /** @brief Flag indicating if MQTT data sending is enabled. */
+    private boolean mqttEnabled = false;
+    /** @brief The address of the MQTT broker (e.g., "broker.hivemq.com"). */
+    private String mqttBrokerAddress = "broker.hivemq.com";
+    /** @brief The port for the MQTT broker (e.g., 1883). */
+    private String mqttPort = "1883";
+    /** @brief The username for MQTT authentication (optional). */
+    private String mqttUsername = "";
+    /** @brief The password for MQTT authentication (optional). */
+    private String mqttPassword = "";
+    /** @brief The base topic for publishing data (e.g., "microplotter/data"). */
+    private String mqttBaseTopic = "microplotter/data";
+    /** @brief The protocol for the MQTT connection ("tcp" or "ssl"). */
+    private String mqttProtocol = "tcp";
+
 
     /**
      * @brief Checks if the "Tags as names" feature is enabled.
@@ -210,4 +228,27 @@ public class ConfigurationModel {
 
     public int getNetworkBufferLimit() { return networkBufferLimit; }
     public void setNetworkBufferLimit(int networkBufferLimit) { this.networkBufferLimit = networkBufferLimit; }
+    
+    
+    
+    public boolean isMqttEnabled() { return mqttEnabled; }
+    public void setMqttEnabled(boolean mqttEnabled) { this.mqttEnabled = mqttEnabled; }
+
+    public String getMqttBrokerAddress() { return mqttBrokerAddress; }
+    public void setMqttBrokerAddress(String mqttBrokerAddress) { this.mqttBrokerAddress = mqttBrokerAddress; }
+
+    public String getMqttPort() { return mqttPort; }
+    public void setMqttPort(String mqttPort) { this.mqttPort = mqttPort; }
+
+    public String getMqttUsername() { return mqttUsername; }
+    public void setMqttUsername(String mqttUsername) { this.mqttUsername = mqttUsername; }
+
+    public String getMqttPassword() { return mqttPassword; }
+    public void setMqttPassword(String mqttPassword) { this.mqttPassword = mqttPassword; }
+
+    public String getMqttBaseTopic() { return mqttBaseTopic; }
+    public void setMqttBaseTopic(String mqttBaseTopic) { this.mqttBaseTopic = mqttBaseTopic; }
+    
+    public String getMqttProtocol() { return mqttProtocol; }
+    public void setMqttProtocol(String protocol) { this.mqttProtocol = protocol; }
 }

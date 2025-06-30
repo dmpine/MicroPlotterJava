@@ -37,6 +37,8 @@ public class MainWindow extends JFrame {
     
     /** @brief Menu option for http configuration. */
     private JMenuItem httpConfigMenuItem;
+    /** @brief Menu option for mqtt configuration. */
+    private JMenuItem mqttConfigMenuItem;
 
     /**
      * @brief Constructs the main application window.
@@ -68,7 +70,11 @@ public class MainWindow extends JFrame {
         // --- NEW NETWORKING MENU ---
         JMenu networkingMenu = new JMenu("Networking");
         httpConfigMenuItem = new JMenuItem("HTTP Endpoint...");
+        mqttConfigMenuItem = new JMenuItem("MQTT Connection...");
+        
         networkingMenu.add(httpConfigMenuItem);
+        networkingMenu.add(mqttConfigMenuItem); 
+        
         menuBar.add(networkingMenu);
         
         JMenu windowMenu = new JMenu("Window");
@@ -138,4 +144,7 @@ public class MainWindow extends JFrame {
     
     /** @brief Gets the 'HTTP Endpoint' menu item. @return The JMenuItem. */
     public JMenuItem getHttpConfigMenuItem() { return httpConfigMenuItem; }
+    
+    /** @brief Gets the 'Arduino Cloud (MQTT)' menu item. @return The JMenuItem. */
+    public JMenuItem getMqttConfigMenuItem() { return mqttConfigMenuItem; }
 }

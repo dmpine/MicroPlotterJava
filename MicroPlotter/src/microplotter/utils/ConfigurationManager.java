@@ -37,10 +37,19 @@ public class ConfigurationManager {
             model.setYAxisType(props.getProperty("plot.yAxisType", "Dec"));
             model.setUseTagsAsNames(Boolean.parseBoolean(props.getProperty("plot.useTagsAsNames", "false")));
             
-            // Load networking settings with defaults
+            // Load HTTP networking settings with defaults
             model.setHttpEnabled(Boolean.parseBoolean(props.getProperty("network.http.enabled", "false")));
             model.setHttpUrl(props.getProperty("network.http.url", ""));
             model.setNetworkBufferLimit(Integer.parseInt(props.getProperty("network.http.bufferLimit", "10")));
+
+            // Load MQTT networking settings with defaults
+            model.setMqttEnabled(Boolean.parseBoolean(props.getProperty("network.mqtt.enabled", "false")));
+            model.setMqttProtocol(props.getProperty("network.mqtt.protocol", "tcp"));
+            model.setMqttBrokerAddress(props.getProperty("network.mqtt.brokerAddress", "broker.hivemq.com"));
+            model.setMqttPort(props.getProperty("network.mqtt.port", "1883"));
+            model.setMqttUsername(props.getProperty("network.mqtt.username", ""));
+            model.setMqttPassword(props.getProperty("network.mqtt.password", ""));
+            model.setMqttBaseTopic(props.getProperty("network.mqtt.baseTopic", "microplotter/data"));
 
             System.out.println("Configuration loaded from " + file.getAbsolutePath());
 
@@ -57,7 +66,7 @@ public class ConfigurationManager {
     public static void saveConfiguration(ConfigurationModel model, File file) {
         Properties props = new Properties();
 
-        // Set plot properties from the model
+        // Set plot properties
         props.setProperty("plot.presentation", model.getPlotPresentation());
         props.setProperty("plot.sampleLimit", String.valueOf(model.getDynamicSampleLimit()));
         props.setProperty("plot.updateTime", String.valueOf(model.getUpdateTime()));
@@ -66,11 +75,19 @@ public class ConfigurationManager {
         props.setProperty("plot.yAxisType", model.getYAxisType());
         props.setProperty("plot.useTagsAsNames", String.valueOf(model.useTagsAsNames()));
 
-        // Set networking properties from the model
+        // Set HTTP networking properties
         props.setProperty("network.http.enabled", String.valueOf(model.isHttpEnabled()));
         props.setProperty("network.http.url", model.getHttpUrl());
         props.setProperty("network.http.bufferLimit", String.valueOf(model.getNetworkBufferLimit()));
 
+        // Set MQTT networking properties
+        props.setProperty("network.mqtt.enabled", String.valueOf(model.isMqttEnabled()));
+        props.setProperty("network.mqtt.protocol", model.getMqttProtocol());
+        props.setProperty("network.mqtt.brokerAddress", model.getMqttBrokerAddress());
+        props.setProperty("network.mqtt.port", model.getMqttPort());
+        props.setProperty("network.mqtt.username", model.getMqttUsername());
+        props.setProperty("network.mqtt.password", model.getMqttPassword());
+        props.setProperty("network.mqtt.baseTopic", model.getMqttBaseTopic());
 
         try (OutputStream output = new FileOutputStream(file)) {
             props.store(output, "MicroPlotter Configuration");

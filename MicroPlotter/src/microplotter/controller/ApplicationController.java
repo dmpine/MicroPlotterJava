@@ -17,6 +17,9 @@ import microplotter.view.MainWindow;
 
 import microplotter.view.HttpConfigDialog;
 
+import microplotter.controller.NetworkingController;
+import microplotter.view.MqttConfigDialog;
+
 /**
  * @brief The main controller that initializes and wires together all components of the application.
  * @details This class acts as the application's entry point after the Main class.
@@ -29,6 +32,8 @@ public class ApplicationController {
     private PlotController plotController;
     /** @brief The application's configuration model. */
     private ConfigurationModel configModel;
+    /** @brief The controller responsible for mqtt networking logic. */
+    private NetworkingController networkingController;
 	
     /**
      * @brief Constructs the ApplicationController, which builds and launches the entire application.
@@ -39,9 +44,9 @@ public class ApplicationController {
      * 4. Makes the main window visible to the user. 
      */
     public ApplicationController() {
-        // 1. Instantiate Models
+    	// 1. Instantiate Models
         SerialPortManager serialManager = new SerialPortManager();
-        this.configModel = new ConfigurationModel(); // Assign to field
+        this.configModel = new ConfigurationModel();
         
         File sessionFile = new File(System.getProperty("user.home"), Constants.SESSION_CONFIG_FILE);
         ConfigurationManager.loadConfiguration(configModel, sessionFile);
@@ -52,30 +57,33 @@ public class ApplicationController {
         // 2. Instantiate Main View
         MainWindow mainWindow = new MainWindow();
 
-        // 3. Instantiate Controllers and wire up listeners
+        // 3. Instantiate ALL Controllers
         this.plotController = new PlotController(mainWindow, plotDataModel, configModel);
-        new SerialController(mainWindow, serialManager, configModel, fileManager, plotController);
+        this.networkingController = new NetworkingController(configModel);
+        new SerialController(mainWindow, serialManager, configModel, fileManager, plotController, networkingController);
         
+        // 4. Wire up UI and sync model
         plotController.syncViewToModel();
-        addMenuListeners(mainWindow); // Pass only mainWindow now
+        addMenuListeners(mainWindow);
         
-        // --- Window Listener to Save on Exit ---
+        // Window Listener to Save on Exit
         mainWindow.setDefaultCloseOperation(javax.swing.JFrame.DO_NOTHING_ON_CLOSE);
         mainWindow.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                // Now we can call plotController directly and it will be visible
-                plotController.updateConfigFromUI(); 
+                plotController.updateConfigFromUI();
                 ConfigurationManager.saveConfiguration(configModel, sessionFile);
+                networkingController.disconnectMqtt(); // Gracefully disconnect
                 e.getWindow().dispose();
                 System.exit(0);
             }
         });
         
-        // 4. Pack, Center, and Show the application
+        // 5. Pack, Center, and Show the application
         mainWindow.pack();
         mainWindow.setLocationRelativeTo(null);
         mainWindow.setMinimumSize(mainWindow.getSize());
+        networkingController.applyMqttConnectionState(); // Attempt to connect on startup
         mainWindow.setVisible(true);
     }
 	
@@ -122,6 +130,12 @@ public class ApplicationController {
         mainWindow.getHttpConfigMenuItem().addActionListener(e -> {
             HttpConfigDialog httpDialog = new HttpConfigDialog(mainWindow, configModel);
             httpDialog.setVisible(true); // This dialog will save the changes to the model
+        });
+        
+        mainWindow.getMqttConfigMenuItem().addActionListener(e -> {
+            MqttConfigDialog mqttDialog = new MqttConfigDialog(mainWindow, configModel);
+            networkingController.handleMqttDialog(mqttDialog);
+            mqttDialog.setVisible(true);
         });
     }
 }

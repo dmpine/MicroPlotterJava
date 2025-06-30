@@ -50,6 +50,8 @@ public class SerialController implements SerialPortDataListener {
     
     /** @brief A buffer to hold data lines before sending them over the network. */
     private final List<String> networkDataBuffer = new ArrayList<>();
+    
+    private final NetworkingController networkingController;
 
     /**
      * @brief Constructs the SerialController.
@@ -61,12 +63,13 @@ public class SerialController implements SerialPortDataListener {
      * @param fileManager The file management utility.
      * @param plotController The plot controller, for forwarding data.
      */
-    public SerialController(MainWindow mainWindow, SerialPortManager serialManager, ConfigurationModel configModel, FileManager fileManager, PlotController plotController) {
+    public SerialController(MainWindow mainWindow, SerialPortManager serialManager, ConfigurationModel configModel, FileManager fileManager, PlotController plotController, NetworkingController networkingController) {
         this.mainWindow = mainWindow;
         this.serialManager = serialManager;
         this.configModel = configModel;
         this.fileManager = fileManager;
         this.plotController = plotController;
+        this.networkingController = networkingController;
         this.portConfigPanel = mainWindow.getPortConfigPanel();
         this.terminalPanel = mainWindow.getTerminalPanel();
         initListeners();
@@ -278,7 +281,7 @@ public class SerialController implements SerialPortDataListener {
                 plotController.processData(line);
             }
 
-            // --- NEW, IMPROVED LOGIC for Network Sending ---
+            DataProcessor.ParsedData parsedData = DataProcessor.parseSerialData(line, true);
             if (configModel.isHttpEnabled()) {
                 networkDataBuffer.add(line);
                 
@@ -315,6 +318,9 @@ public class SerialController implements SerialPortDataListener {
                     // Clear the buffer
                     networkDataBuffer.clear();
                 }
+            }
+            if (configModel.isMqttEnabled()) {
+                networkingController.processAndPublishData(parsedData);
             }
         });
     }
